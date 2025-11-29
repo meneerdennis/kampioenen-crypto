@@ -1,0 +1,685 @@
+:root {
+  --bg: #f5f5f7;
+  --card-bg: #ffffff;
+  --border: #dddddd;
+  --text: #222222;
+  --muted: #777777;
+  --accent: #0077ff;
+  --success: #2ecc71;
+  --error: #e74c3c;
+  --radius: 12px;
+  --shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+}
+
+.app {
+  width: 100%;
+  max-width: 1000px;
+  padding: 24px 16px 40px;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 1.8rem;
+}
+
+header p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 720px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 720px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .app {
+    padding: 12px 8px 20px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .clue input[type="text"] {
+    padding: 12px 12px;
+    font-size: 1rem;
+    min-height: 44px;
+  }
+
+  button {
+    padding: 12px 18px;
+    font-size: 1rem;
+    min-height: 44px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .buttons button {
+    width: 100%;
+  }
+}
+
+/* Active Clue Section */
+.active-clue-section {
+  background: var(--card-bg);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 119, 255, 0.15);
+}
+
+.active-clue-section.hidden {
+  display: none;
+}
+
+.active-clue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.active-clue-header h3 {
+  margin: 0;
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+.active-clue-text {
+  font-size: 1rem;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.active-clue-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.active-clue-input-row input[type="text"] {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.active-clue-input-row input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.15);
+}
+
+/* Sidebar */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.clue-list-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.clue-list-simple {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clue-list-item {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clue-list-item:hover {
+  background: #e9ecef;
+  border-color: var(--accent);
+}
+
+.clue-list-item.active {
+  background: #e3f2fd;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(0, 119, 255, 0.2);
+}
+
+.clue-list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.clue-list-item-number {
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+.clue-list-item-length {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.clue-list-item-text {
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.clue-list-item.correct {
+  border-color: var(--success);
+  background: #f0fdf4;
+}
+
+.clue-list-item.incorrect {
+  border-color: var(--error);
+  background: #fef2f2;
+}
+
+/* Grid line highlighting */
+.fil-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+.fil-row:hover {
+  background: #f0f8ff;
+}
+
+.fil-row.active {
+  background: #e3f2fd;
+  box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.3);
+}
+
+/* Enhanced solution panel */
+.solution-panel {
+  background: #f8f9fa;
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.clue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.clue {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fafafa;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.clue:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(0, 119, 255, 0.2);
+}
+
+.clue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.clue-number {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.clue-length {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.clue-text {
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.clue-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.clue-input-row.hidden {
+  display: none;
+}
+
+.clue input[type="text"] {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.clue input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.15);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.clue.correct {
+  border-color: var(--success);
+  box-shadow: 0 0 0 1px rgba(46, 204, 113, 0.3);
+}
+
+.clue.correct .status-dot {
+  background: var(--success);
+}
+
+.clue.incorrect {
+  border-color: var(--error);
+  box-shadow: 0 0 0 1px rgba(231, 76, 60, 0.3);
+}
+
+.clue.incorrect .status-dot {
+  background: var(--error);
+}
+
+.solution-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.solution-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  margin-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.solution-word {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.solution-letter {
+  width: 32px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  background: #fdfdfd;
+}
+
+.solution-letter.filled {
+  border-color: var(--accent);
+  border-style: solid;
+  background: #eef5ff;
+}
+
+.solution-hint {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ---- Buttons ---- */
+
+.buttons {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+button {
+  border-radius: 999px;
+  border: none;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 4px 10px rgba(0, 119, 255, 0.25);
+}
+
+button.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.toast {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #eef2ff;
+}
+
+.toast.hidden {
+  display: none;
+}
+
+.toast.error {
+  background: #fdecea;
+}
+
+/* ---- VISUELE FILIPPINE ---- */
+
+.filippine-visual {
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.visual-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.fil-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 420px;
+  overflow-y: auto;
+  min-height: 100px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background: #f9f9f9;
+}
+
+.fil-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fil-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #111827;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.fil-cells {
+  display: flex;
+  gap: 2px;
+}
+
+.fil-cell {
+  width: 18px;
+  height: 22px;
+  border-radius: 3px;
+  border: 1px solid #d1d5db;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9fafb;
+}
+
+.fil-cell.filled {
+  background: #eef2ff;
+}
+
+.fil-cell.solution {
+  border-color: var(--accent);
+  background: #e0edff;
+}
+
+/* Intersection cells styling */
+.fil-cell.intersection-cell {
+  position: relative;
+  font-weight: 600;
+}
+
+.fil-cell.intersection-cell::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid;
+  border-radius: 3px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.fil-cell.intersection-cell:hover {
+  transform: scale(1.05);
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Visual connection indicators */
+.fil-cell.intersection-cell.connected {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Group number badges */
+.intersection-group-number {
+  pointer-events: none;
+  font-family: inherit;
+  line-height: 1;
+}
+
+/* Onzichtbare 'padding' vakjes */
+.fil-cell.ghost {
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Extra verticale ruimte tussen groepen in de Filippine-kolom */
+.fil-group-spacer {
+  height: 8px;
+}
+
+/* Spaties tussen de woorden van het oplossingswoord */
+.solution-spacer {
+  width: 16px;
+  height: 1px;
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 8px 4px 16px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  header p {
+    font-size: 0.9rem;
+  }
+
+  .clue {
+    padding: 12px;
+  }
+
+  .clue-text {
+    font-size: 0.9rem;
+  }
+
+  .clue-header {
+    font-size: 0.85rem;
+  }
+
+  .clue input[type="text"] {
+    padding: 10px 10px;
+    font-size: 1rem;
+  }
+
+  .solution-letter {
+    width: 28px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .fil-cell {
+    width: 16px;
+    height: 20px;
+    font-size: 0.75rem;
+  }
+
+  .fil-num {
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Additional mobile-friendly improvements */
+@media (max-width: 360px) {
+  .app {
+    padding: 6px 2px 12px;
+  }
+
+  .card {
+    padding: 8px;
+  }
+
+  .clue {
+    padding: 8px;
+  }
+
+  button {
+    padding: 14px 16px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Touch-friendly improvements for all screen sizes */
+@media (hover: none) and (pointer: coarse) {
+  .clue {
+    padding: 14px;
+  }
+
+  .clue input[type="text"] {
+    padding: 14px 12px;
+    min-height: 48px;
+  }
+
+  button {
+    min-height: 48px;
+    padding: 14px 20px;
+  }
+
+  .solution-letter {
+    min-height: 44px;
+  }
+}

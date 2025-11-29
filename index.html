@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Filippine kruiswoordpuzzel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <h1 id="title"></h1>
+        <p>
+          Vul de woorden in op basis van de omschrijvingen. De gemarkeerde
+          letters vormen samen het oplossingswoord.
+        </p>
+      </header>
+
+      <div class="card">
+        <div class="layout">
+          <!-- Hoofdsectie met Grid en Active Clue -->
+          <section>
+            <!-- Active Clue Section (dynamisch) -->
+            <div id="activeClueSection" class="active-clue-section hidden">
+              <div class="active-clue-header">
+                <h3 id="activeClueNumber"></h3>
+                <div id="activeClueLength" class="clue-length"></div>
+              </div>
+              <div id="activeClueText" class="active-clue-text"></div>
+              <div class="active-clue-input-row">
+                <input
+                  type="text"
+                  id="activeClueInput"
+                  maxlength=""
+                  placeholder="Antwoord"
+                />
+                <div id="activeClueStatus" class="status-dot"></div>
+              </div>
+            </div>
+
+            <!-- Filippine Grid -->
+            <div class="filippine-visual">
+              <div class="visual-title">Filippine Grid</div>
+              <div id="filipGrid" class="fil-grid"></div>
+              <div class="fil-legend">
+                <div><strong>Kleuren = letter intersecties</strong></div>
+                <div>
+                  🟦 Letters in gekleurde vakjes zijn verbonden met andere
+                  woorden
+                </div>
+                <div>
+                  ✏️ Typ een letter in één intersectie en het verschijnt
+                  automatisch in alle verbonden posities
+                </div>
+              </div>
+            </div>
+
+            <div class="buttons">
+              <button id="checkBtn">Controleer antwoorden</button>
+              <button class="secondary" id="clearBtn">Alles wissen</button>
+            </div>
+
+            <div id="toast" class="toast hidden" aria-live="polite"></div>
+
+            <div class="tiny-note">
+              Tip: je kunt deze puzzel makkelijk aanpassen in
+              <b>puzzle.js</b> of gebruik de
+              <a href="editor.html" target="_blank">puzzle editor</a>.
+            </div>
+          </section>
+
+          <!-- Zijbalk met Clue Lijst en Oplossing -->
+          <aside class="sidebar">
+            <!-- Clue List -->
+            <div class="clue-list-section">
+              <h3>Clues</h3>
+              <div class="clue-list" id="clueList"></div>
+            </div>
+
+            <!-- Solution Panel -->
+            <div class="solution-panel">
+              <div class="solution-title">Oplossingswoord</div>
+              <div id="solutionWord" class="solution-word"></div>
+              <div class="solution-hint" id="solutionHint"></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <footer>
+        Eenvoudige webapp – volledig client-side, geen server nodig.
+        <a href="editor.html" target="_blank">Puzzle Editor</a>
+      </footer>
+    </div>
+
+    <!-- Data (woorden en oplossing) -->
+    <script src="puzzle.js"></script>
+
+    <!-- Logica / functionaliteit -->
+    <script src="script.js"></script>
+  </body>
+</html>

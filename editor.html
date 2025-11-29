@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Puzzle Editor</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .editor-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .editor-header {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+      }
+
+      .editor-form {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 15px;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .form-row label {
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .form-row input[type="text"],
+      .form-row input[type="number"],
+      .form-row textarea {
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .form-row input[type="text"]:focus,
+      .form-row input[type="number"]:focus,
+      .form-row textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.15);
+      }
+
+      .form-row textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .checkbox-row input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      .word-entry {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        border-left: 4px solid var(--accent);
+      }
+
+      .word-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .word-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      .delete-btn {
+        background: var(--error);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+      }
+
+      .delete-btn:hover {
+        background: #c0392b;
+      }
+
+      .add-word-btn {
+        background: var(--success);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
+
+      .add-word-btn:hover {
+        background: #27ae60;
+      }
+
+      .download-btn {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-right: 10px;
+      }
+
+      .preview-btn {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      .button-group {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .warning {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      /* Mobile-friendly responsive design for editor */
+      @media (max-width: 768px) {
+        .editor-container {
+          padding: 15px;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .form-row label {
+          font-size: 0.9rem;
+        }
+
+        .word-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .delete-btn {
+          align-self: flex-end;
+        }
+
+        .button-group {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .download-btn,
+        .preview-btn {
+          width: 100%;
+        }
+
+        .add-word-btn {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .editor-container {
+          padding: 10px;
+        }
+
+        .editor-header,
+        .editor-form,
+        .word-entry {
+          padding: 15px;
+        }
+
+        .warning {
+          padding: 10px;
+          font-size: 0.9rem;
+        }
+
+        .word-title {
+          font-size: 1rem;
+        }
+
+        .delete-btn,
+        .add-word-btn,
+        .download-btn,
+        .preview-btn {
+          padding: 12px 16px;
+          font-size: 0.9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="editor-container">
+      <header class="editor-header">
+        <h1>Puzzle Editor</h1>
+        <p>
+          Edit the clues and answers for your crossword puzzle. After making
+          changes, download the updated puzzle.js file.
+        </p>
+        <div class="warning">
+          <strong>Important:</strong> After downloading the updated puzzle.js
+          file, replace the existing file in your project folder.
+        </div>
+      </header>
+
+      <div class="editor-form">
+        <h2>Puzzle Settings</h2>
+        <div class="form-row">
+          <label for="puzzleTitle">Title:</label>
+          <input
+            type="text"
+            id="puzzleTitle"
+            placeholder="Enter puzzle title"
+          />
+        </div>
+        <div class="form-row">
+          <label for="puzzleHint">Hint:</label>
+          <input type="text" id="puzzleHint" placeholder="Enter puzzle hint" />
+        </div>
+      </div>
+
+      <button class="add-word-btn" onclick="addNewWord()">
+        + Add New Word
+      </button>
+
+      <div id="wordsContainer">
+        <!-- Word entries will be dynamically added here -->
+      </div>
+
+      <div class="button-group">
+        <button class="download-btn" onclick="downloadPuzzle()">
+          Download Updated puzzle.js
+        </button>
+        <button class="preview-btn" onclick="previewPuzzle()">
+          Preview Original Puzzle
+        </button>
+      </div>
+    </div>
+
+    <script src="puzzle.js"></script>
+    <script>
+      let wordCounter = 0;
+
+      // Initialize the editor with existing puzzle data
+      function initializeEditor() {
+        document.getElementById("puzzleTitle").value = puzzle.title || "";
+        document.getElementById("puzzleHint").value = puzzle.hint || "";
+
+        const container = document.getElementById("wordsContainer");
+        container.innerHTML = "";
+
+        puzzle.words.forEach((word, index) => {
+          addWordEntry(word, index);
+        });
+      }
+
+      function addWordEntry(word, index = null) {
+        const container = document.getElementById("wordsContainer");
+        const wordId = index !== null ? index : wordCounter++;
+
+        const wordDiv = document.createElement("div");
+        wordDiv.className = "word-entry";
+        wordDiv.id = `word-${wordId}`;
+
+        wordDiv.innerHTML = `
+                <div class="word-header">
+                    <div class="word-title">Word ${wordId + 1}</div>
+                    <button class="delete-btn" onclick="deleteWord(${wordId})">Delete</button>
+                </div>
+                <div class="form-row">
+                    <label>Clue:</label>
+                    <textarea id="clue-${wordId}" placeholder="Enter the clue">${
+          word.clue || ""
+        }</textarea>
+                </div>
+                <div class="form-row">
+                    <label>Answer:</label>
+                    <input type="text" id="answer-${wordId}" placeholder="Enter the answer" value="${
+          word.answer || ""
+        }" style="text-transform: uppercase;">
+                </div>
+                <div class="form-row">
+                    <label>Solution Index:</label>
+                    <input type="number" id="solutionIndex-${wordId}" placeholder="0" min="0" value="${
+          word.solutionIndex || 0
+        }">
+                </div>
+                <div class="form-row">
+                    <label>Break After:</label>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="breakAfter-${wordId}" ${
+          word.breakAfter ? "checked" : ""
+        }>
+                        <span>Add a break after this word</span>
+                    </div>
+                </div>
+            `;
+
+        container.appendChild(wordDiv);
+      }
+
+      function addNewWord() {
+        const newWord = {
+          clue: "",
+          answer: "",
+          solutionIndex: 0,
+          breakAfter: false,
+        };
+        addWordEntry(newWord);
+      }
+
+      function deleteWord(wordId) {
+        if (confirm("Are you sure you want to delete this word?")) {
+          const wordDiv = document.getElementById(`word-${wordId}`);
+          wordDiv.remove();
+        }
+      }
+
+      function collectPuzzleData() {
+        const title = document.getElementById("puzzleTitle").value;
+        const hint = document.getElementById("puzzleHint").value;
+
+        const words = [];
+        const wordEntries = document.querySelectorAll(".word-entry");
+
+        wordEntries.forEach((entry, index) => {
+          const clue = entry.querySelector(`#clue-${index}`)
+            ? entry.querySelector(`#clue-${index}`).value
+            : entry.querySelector(`[id*="clue-"]`).value;
+
+          const answerInput = entry.querySelector(`[id*="answer-"]`);
+          const solutionIndexInput = entry.querySelector(
+            `[id*="solutionIndex-"]`
+          );
+          const breakAfterInput = entry.querySelector(`[id*="breakAfter-"]`);
+
+          if (answerInput && answerInput.value.trim()) {
+            const word = {
+              clue: clue || "",
+              answer: answerInput.value.toUpperCase().trim(),
+              solutionIndex: parseInt(solutionIndexInput.value) || 0,
+            };
+
+            if (breakAfterInput && breakAfterInput.checked) {
+              word.breakAfter = true;
+            }
+
+            words.push(word);
+          }
+        });
+
+        return {
+          title: title || "Untitled Puzzle",
+          hint: hint || "",
+          words: words,
+        };
+      }
+
+      function generatePuzzleJS(puzzleData) {
+        let jsContent = `const puzzle = {\n`;
+        jsContent += `  title: "${puzzleData.title}",\n`;
+        jsContent += `  hint: "${puzzleData.hint}",\n\n`;
+        jsContent += `  words: [\n`;
+
+        puzzleData.words.forEach((word, index) => {
+          jsContent += `    {\n`;
+          jsContent += `      clue: "${word.clue}",\n`;
+          jsContent += `      answer: "${word.answer}",\n`;
+          jsContent += `      solutionIndex: ${word.solutionIndex}`;
+
+          if (word.breakAfter) {
+            jsContent += `,\n      breakAfter: true`;
+          }
+
+          jsContent += `\n    }`;
+
+          if (index < puzzleData.words.length - 1) {
+            jsContent += `,`;
+          }
+
+          jsContent += `\n`;
+        });
+
+        jsContent += `  ],\n`;
+        jsContent += `};\n`;
+
+        return jsContent;
+      }
+
+      function downloadPuzzle() {
+        const puzzleData = collectPuzzleData();
+        const jsContent = generatePuzzleJS(puzzleData);
+
+        const blob = new Blob([jsContent], { type: "application/javascript" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "puzzle.js";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert(
+          "puzzle.js has been downloaded! Replace the existing file in your project folder."
+        );
+      }
+
+      function previewPuzzle() {
+        window.open("index.html", "_blank");
+      }
+
+      // Initialize the editor when the page loads
+      window.addEventListener("load", initializeEditor);
+    </script>
+  </body>
+</html>
