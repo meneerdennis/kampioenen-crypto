@@ -154,8 +154,12 @@ puzzle.words.forEach((word, index) => {
     c.dataset.letterIndex = i;
     c.dataset.wordIndex = index;
 
-    // Make cells focusable for desktop keyboard input
-    c.contentEditable = true;
+    // Make cells focusable only for desktop keyboard input (not mobile)
+    if (window.innerWidth > 720) {
+      c.contentEditable = true;
+    } else {
+      c.contentEditable = false;
+    }
     c.setAttribute("data-original-content", ""); // Store original content
 
     // Add intersection styling
@@ -219,23 +223,29 @@ puzzle.words.forEach((word, index) => {
       c.classList.add("selected-cell");
     });
 
-    // Add focus handler for desktop keyboard input
+    // Add focus handler for desktop keyboard input (not mobile)
     c.addEventListener("focus", () => {
-      // If this cell's word is not the active word, make it active
-      if (activeWordIndex !== index) {
-        selectWord(index);
-      }
-      currentCellPosition = i;
+      // Only handle focus on desktop, not mobile
+      if (window.innerWidth > 720) {
+        // If this cell's word is not the active word, make it active
+        if (activeWordIndex !== index) {
+          selectWord(index);
+        }
+        currentCellPosition = i;
 
-      // Visual feedback for selected cell
-      document.querySelectorAll(".fil-cell").forEach((cell) => {
-        cell.classList.remove("selected-cell");
-      });
-      c.classList.add("selected-cell");
+        // Visual feedback for selected cell
+        document.querySelectorAll(".fil-cell").forEach((cell) => {
+          cell.classList.remove("selected-cell");
+        });
+        c.classList.add("selected-cell");
+      }
     });
 
-    // Add input handler for direct typing (desktop)
+    // Add input handler for direct typing (desktop only)
     c.addEventListener("input", (e) => {
+      // Skip input handling on mobile
+      if (window.innerWidth <= 720) return;
+
       // Skip if this is an intersection cell (they have their own handling)
       const intersectionInfo = getIntersectionInfo(index, i);
       if (intersectionInfo) {
@@ -325,8 +335,10 @@ puzzle.words.forEach((word, index) => {
       }, 0);
     });
 
-    // Add keydown handler for navigation
+    // Add keydown handler for navigation (desktop only)
     c.addEventListener("keydown", (e) => {
+      // Skip keydown handling on mobile
+      if (window.innerWidth <= 720) return;
       handleGridCellKeydown(e, index, i);
     });
 
@@ -888,7 +900,7 @@ function focusGridCell(wordIndex, letterIndex) {
     // Add selected cell styling
     cell.classList.add("selected-cell");
 
-    // Focus the cell for desktop keyboard input
+    // Focus the cell for desktop keyboard input (not mobile)
     if (window.innerWidth > 720) {
       cell.focus();
     }
