@@ -673,21 +673,26 @@ button:hover {
 /* Ensure good touch targets on mobile */
 @media (max-width: 720px) {
   .fil-cell {
-    width: 40px;
-    height: 48px;
-    font-size: 1.3rem;
+    width: 32px;
+    height: 40px;
+    font-size: 1.1rem;
     min-height: 44px; /* Apple's recommended touch target size */
   }
 
   .fil-num {
-    width: 24px;
-    height: 24px;
-    font-size: 0.8rem;
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
   }
 
   /* Ensure grid uses full width on mobile */
   .fil-grid {
-    padding: 8px 4px;
+    padding: 8px 2px;
+    gap: 2px;
+  }
+
+  .fil-row {
+    gap: 4px;
   }
 }
 
@@ -848,21 +853,6 @@ button:hover {
   }
 
   .fil-cell {
-    width: 32px;
-    height: 40px;
-    font-size: 1.1rem;
-  }
-
-  .fil-num {
-    width: 20px;
-    height: 20px;
-    font-size: 0.7rem;
-  }
-}
-
-/* Even smaller letterboxes for very small screens */
-@media (max-width: 380px) {
-  .fil-cell {
     width: 28px;
     height: 36px;
     font-size: 1rem;
@@ -874,10 +864,45 @@ button:hover {
     font-size: 0.65rem;
   }
 
-  .solution-letter {
-    width: 26px;
-    height: 34px;
+  /* Reduce gap and padding for smaller screens */
+  .fil-grid {
+    padding: 6px 1px;
+    gap: 1px;
+  }
+
+  .fil-row {
+    gap: 3px;
+  }
+}
+
+/* Even smaller letterboxes for very small screens */
+@media (max-width: 380px) {
+  .fil-cell {
+    width: 24px;
+    height: 32px;
     font-size: 0.9rem;
+  }
+
+  .fil-num {
+    width: 16px;
+    height: 16px;
+    font-size: 0.6rem;
+  }
+
+  .solution-letter {
+    width: 24px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  /* Even tighter spacing for very small screens */
+  .fil-grid {
+    padding: 4px 0px;
+    gap: 1px;
+  }
+
+  .fil-row {
+    gap: 2px;
   }
 }
 
@@ -902,15 +927,31 @@ button:hover {
 
   /* Even smaller components for very small screens */
   .fil-cell {
-    width: 26px;
-    height: 34px;
-    font-size: 0.95rem;
+    width: 22px;
+    height: 30px;
+    font-size: 0.85rem;
+  }
+
+  .fil-num {
+    width: 14px;
+    height: 14px;
+    font-size: 0.55rem;
   }
 
   .solution-letter {
-    width: 24px;
-    height: 32px;
+    width: 22px;
+    height: 30px;
     font-size: 0.85rem;
+  }
+
+  /* Minimal spacing for smallest screens */
+  .fil-grid {
+    padding: 2px 0px;
+    gap: 0px;
+  }
+
+  .fil-row {
+    gap: 1px;
   }
 }
 
@@ -932,6 +973,12 @@ button:hover {
 
   .solution-letter {
     min-height: 44px;
+  }
+
+  /* Ensure cells maintain minimum touch size while being compact */
+  .fil-cell {
+    min-width: 40px;
+    min-height: 40px;
   }
 }
 
