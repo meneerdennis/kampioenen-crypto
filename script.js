@@ -144,11 +144,9 @@ puzzle.words.forEach((word, index) => {
     c.dataset.letterIndex = i;
     c.dataset.wordIndex = index;
 
-    // Make cells focusable for mobile keyboard support
+    // Make cells focusable for desktop keyboard input
     c.contentEditable = true;
-    c.setAttribute("inputmode", "latin");
-    c.setAttribute("autocapitalize", "characters");
-    c.setAttribute("spellcheck", "false");
+    c.setAttribute("data-original-content", ""); // Store original content
 
     // Add intersection styling
     const intersectionInfo = getIntersectionInfo(index, i);
@@ -211,12 +209,7 @@ puzzle.words.forEach((word, index) => {
       c.classList.add("selected-cell");
     });
 
-    // Add input event handler for mobile keyboards
-    c.addEventListener("input", (e) => {
-      handleGridCellInput(c);
-    });
-
-    // Add focus handler
+    // Add focus handler for desktop keyboard input
     c.addEventListener("focus", () => {
       // If this cell's word is not the active word, make it active
       if (activeWordIndex !== index) {
@@ -231,15 +224,43 @@ puzzle.words.forEach((word, index) => {
       c.classList.add("selected-cell");
     });
 
-    // Add blur handler to clean up single character input
-    c.addEventListener("blur", () => {
-      // Ensure only single character remains
-      const text = c.textContent.toUpperCase().replace(/[^A-Z]/g, "");
-      if (text.length > 1) {
-        c.textContent = text.charAt(0);
-      } else if (text.length === 0) {
-        c.textContent = "";
+    // Add input handler for direct typing (desktop)
+    c.addEventListener("input", (e) => {
+      // Skip if this is an intersection cell (they have their own handling)
+      const intersectionInfo = getIntersectionInfo(index, i);
+      if (intersectionInfo) {
+        // For intersection cells, just clean up the text but don't trigger full input handling
+        const text = c.textContent.toUpperCase().replace(/[^A-Z]/g, "");
+        const newLetter = text.slice(0, 1);
+        c.textContent = newLetter;
+
+        // If there's a valid letter, handle it through the proper intersection system
+        if (newLetter && /[A-Z]/.test(newLetter)) {
+          handleCellInput(index, i, newLetter);
+        } else if (!newLetter) {
+          // Handle clearing
+          handleCellInput(index, i, " ");
+        }
+        return;
       }
+
+      // Only handle if this is a single character input
+      if (c.textContent.length === 1) {
+        const letter = c.textContent.toUpperCase();
+        if (/[A-Z]/.test(letter)) {
+          handleCellInput(index, i, letter);
+          // Move to next cell if available
+          if (i < puzzle.words[index].answer.length - 1) {
+            focusGridCell(index, i + 1);
+          }
+        }
+      }
+      // Clean up the cell content to prevent accumulation
+      setTimeout(() => {
+        if (c.textContent.length > 1) {
+          c.textContent = c.textContent.slice(-1);
+        }
+      }, 0);
     });
 
     // Add keydown handler for navigation
@@ -665,48 +686,114 @@ function focusGridCell(wordIndex, letterIndex) {
 
     // Add selected cell styling
     cell.classList.add("selected-cell");
+
+    // Focus the cell for desktop keyboard input
+    if (window.innerWidth > 720) {
+      cell.focus();
+    }
   }
 }
 
 // Handle intersection propagation from grid cells
 function handleCellIntersection(wordIndex, letterIndex, letter) {
   const intersectionInfo = getIntersectionInfo(wordIndex, letterIndex);
-  if (!intersectionInfo || !letter.trim()) return;
+  if (!intersectionInfo) return;
 
-  // Update all connected positions
-  intersectionInfo.connected.forEach((connectedKey) => {
-    const [targetWordIndex, targetPos] = connectedKey.split("-").map(Number);
+  // Only propagate if the letter is not empty
+  if (letter.trim()) {
+    // Update all connected positions
+    intersectionInfo.connected.forEach((connectedKey) => {
+      const [targetWordIndex, targetPos] = connectedKey.split("-").map(Number);
 
-    // Skip if this is the source cell
-    if (targetWordIndex === wordIndex && targetPos === letterIndex) return;
+      // Skip if this is the source cell
+      if (targetWordIndex === wordIndex && targetPos === letterIndex) return;
 
-    // Get current value of target word
-    let targetWordValue = wordInputs[targetWordIndex];
+      // Get current value of target word
+      let targetWordValue = wordInputs[targetWordIndex];
 
-    // Update the specific position
-    if (targetWordValue.length <= targetPos) {
-      targetWordValue = targetWordValue.padEnd(targetPos + 1, " ");
-    }
+      // Update the specific position
+      if (targetWordValue.length <= targetPos) {
+        targetWordValue = targetWordValue.padEnd(targetPos + 1, " ");
+      }
 
-    // Replace the character at the target position
-    const before = targetWordValue.substring(0, targetPos);
-    const after = targetWordValue.substring(targetPos + 1);
-    targetWordValue = before + letter + after;
+      // Check if the letter is different from what's currently there
+      const currentLetter = targetWordValue[targetPos];
+      if (currentLetter !== letter) {
+        // Replace the character at the target position
+        const before = targetWordValue.substring(0, targetPos);
+        const after = targetWordValue.substring(targetPos + 1);
+        targetWordValue = before + letter + after;
 
-    // Update the stored value
-    wordInputs[targetWordIndex] = targetWordValue;
+        // Update the stored value
+        wordInputs[targetWordIndex] = targetWordValue;
 
-    // Update the target cell's visual content
-    const targetCell = document.querySelector(
-      `[data-word-index="${targetWordIndex}"][data-letter-index="${targetPos}"]`
-    );
-    if (targetCell) {
-      targetCell.textContent = letter;
-    }
+        // Update the target cell's visual content (without triggering intersection)
+        const targetCell = document.querySelector(
+          `[data-word-index="${targetWordIndex}"][data-letter-index="${targetPos}"]`
+        );
+        if (targetCell) {
+          // Store intersection numbers before updating text
+          const intersectionNumbers = Array.from(
+            targetCell.querySelectorAll(".intersection-group-number")
+          );
 
-    // Update the visual row
-    updateVisualRow(targetWordIndex, targetWordValue);
-  });
+          // Update text content
+          targetCell.textContent = letter;
+
+          // Restore intersection numbers
+          intersectionNumbers.forEach((num) => {
+            targetCell.appendChild(num);
+          });
+        }
+
+        // Update the visual row
+        updateVisualRow(targetWordIndex, targetWordValue);
+      }
+    });
+  } else {
+    // If letter is empty, clear all connected positions
+    intersectionInfo.connected.forEach((connectedKey) => {
+      const [targetWordIndex, targetPos] = connectedKey.split("-").map(Number);
+
+      // Skip if this is the source cell
+      if (targetWordIndex === wordIndex && targetPos === letterIndex) return;
+
+      // Get current value of target word
+      let targetWordValue = wordInputs[targetWordIndex];
+
+      // Clear the specific position
+      if (targetWordValue.length > targetPos) {
+        const before = targetWordValue.substring(0, targetPos);
+        const after = targetWordValue.substring(targetPos + 1);
+        targetWordValue = before + " " + after;
+
+        // Update the stored value
+        wordInputs[targetWordIndex] = targetWordValue;
+
+        // Update the target cell's visual content (without triggering intersection)
+        const targetCell = document.querySelector(
+          `[data-word-index="${targetWordIndex}"][data-letter-index="${targetPos}"]`
+        );
+        if (targetCell) {
+          // Store intersection numbers before updating text
+          const intersectionNumbers = Array.from(
+            targetCell.querySelectorAll(".intersection-group-number")
+          );
+
+          // Update text content
+          targetCell.textContent = "";
+
+          // Restore intersection numbers
+          intersectionNumbers.forEach((num) => {
+            targetCell.appendChild(num);
+          });
+        }
+
+        // Update the visual row
+        updateVisualRow(targetWordIndex, targetWordValue);
+      }
+    });
+  }
 }
 
 // Propagate letters to connected intersection cells
@@ -820,6 +907,9 @@ function selectWord(index) {
   }
 
   focusGridCell(index, targetCellIndex);
+
+  // Show virtual keyboard on mobile
+  showVirtualKeyboard();
 }
 
 // Find the first empty cell in a word, or return 0 if all are filled
@@ -844,28 +934,34 @@ function updateVisualRow(index, text) {
     const li = Number(cell.dataset.letterIndex);
     if (li < 0) return; // ghost cell
 
-    // Preserve child elements (like intersection group numbers) while updating the cell
+    const ch = letters[li] === " " ? "" : letters[li];
+
+    // Store intersection group numbers before updating text
     const intersectionNumbers = Array.from(
       cell.querySelectorAll(".intersection-group-number")
     );
 
-    const ch = letters[li] === " " ? "" : letters[li];
+    // Remove intersection numbers from the cell
+    intersectionNumbers.forEach((num) => {
+      if (num.parentNode === cell) {
+        cell.removeChild(num);
+      }
+    });
 
-    // Clear the cell content but preserve child elements
-    while (cell.firstChild) {
-      cell.removeChild(cell.firstChild);
-    }
-
-    // Add the letter if it's not empty
+    // Update the text content
     if (ch) {
       cell.textContent = ch;
+    } else {
+      cell.textContent = "";
     }
 
     cell.classList.toggle("filled", ch !== "");
 
-    // Restore intersection group numbers if they existed
+    // Restore intersection group numbers
     intersectionNumbers.forEach((num) => {
-      cell.appendChild(num);
+      if (num.parentNode !== cell) {
+        cell.appendChild(num);
+      }
     });
   });
 }
@@ -905,19 +1001,53 @@ function checkSingle(i) {
 function checkIntersections() {
   let conflicts = [];
 
+  // Group intersections by group ID to check for consistency within each group
+  const groupMap = new Map();
+
   intersections.forEach((intersection, index) => {
-    const word1Value = wordInputs[intersection.word1Index];
-    const word2Value = wordInputs[intersection.word2Index];
+    const groupId = intersection.group;
+    if (!groupMap.has(groupId)) {
+      groupMap.set(groupId, []);
+    }
+    groupMap.get(groupId).push(intersection);
+  });
 
-    const letter1 = word1Value[intersection.letter1Pos]?.toUpperCase() || "";
-    const letter2 = word2Value[intersection.letter2Pos]?.toUpperCase() || "";
+  // Check each group for conflicts
+  groupMap.forEach((groupIntersections, groupId) => {
+    // Check if all letters in this group are the same (when filled)
+    const groupLetters = new Set();
 
-    if (letter1 && letter2 && letter1 !== letter2) {
-      conflicts.push({
-        intersection,
-        letter1,
-        letter2,
-        group: index,
+    groupIntersections.forEach((intersection) => {
+      const word1Value = wordInputs[intersection.word1Index];
+      const word2Value = wordInputs[intersection.word2Index];
+
+      const letter1 = word1Value[intersection.letter1Pos]?.toUpperCase() || "";
+      const letter2 = word2Value[intersection.letter2Pos]?.toUpperCase() || "";
+
+      if (letter1) groupLetters.add(letter1);
+      if (letter2) groupLetters.add(letter2);
+    });
+
+    // If there are conflicting letters in the same group, report them
+    if (groupLetters.size > 1) {
+      // Find the specific conflicts
+      groupIntersections.forEach((intersection, index) => {
+        const word1Value = wordInputs[intersection.word1Index];
+        const word2Value = wordInputs[intersection.word2Index];
+
+        const letter1 =
+          word1Value[intersection.letter1Pos]?.toUpperCase() || "";
+        const letter2 =
+          word2Value[intersection.letter2Pos]?.toUpperCase() || "";
+
+        if (letter1 && letter2 && letter1 !== letter2) {
+          conflicts.push({
+            intersection,
+            letter1,
+            letter2,
+            group: groupId,
+          });
+        }
       });
     }
   });
@@ -925,7 +1055,34 @@ function checkIntersections() {
   return conflicts;
 }
 
-// ----------- KNOPPEN -----------
+// Highlight cells with intersection conflicts
+function highlightIntersectionConflicts(conflicts) {
+  // Clear all previous conflict highlights
+  document
+    .querySelectorAll(".fil-cell.intersection-cell.conflict")
+    .forEach((cell) => {
+      cell.classList.remove("conflict");
+    });
+
+  // Highlight cells that have conflicts
+  conflicts.forEach((conflict) => {
+    // Highlight first cell of the conflict
+    const cell1 = document.querySelector(
+      `[data-word-index="${conflict.intersection.word1Index}"][data-letter-index="${conflict.intersection.letter1Pos}"]`
+    );
+    if (cell1) {
+      cell1.classList.add("conflict");
+    }
+
+    // Highlight second cell of the conflict
+    const cell2 = document.querySelector(
+      `[data-word-index="${conflict.intersection.word2Index}"][data-letter-index="${conflict.intersection.letter2Pos}"]`
+    );
+    if (cell2) {
+      cell2.classList.add("conflict");
+    }
+  });
+}
 document.getElementById("checkBtn").addEventListener("click", () => {
   let correct = 0;
 
@@ -936,23 +1093,42 @@ document.getElementById("checkBtn").addEventListener("click", () => {
     }
   });
 
+  // Check for intersection conflicts
+  const conflicts = checkIntersections();
+
+  // Highlight conflicted cells
+  highlightIntersectionConflicts(conflicts);
+
   toastEl.classList.remove("hidden");
 
-  if (correct === 0) {
-    toastEl.textContent = "Nog geen enkel woord is juist.";
-    toastEl.className = "toast error";
+  let message = "";
+  let toastClass = "toast";
+
+  if (conflicts.length > 0) {
+    // Show conflict information
+    const conflictGroups = [...new Set(conflicts.map((c) => c.group))];
+    message = `Let op! Er zijn lettersconflict in intersectie groep(en): ${conflictGroups.join(
+      ", "
+    )}. Controleer je antwoorden.`;
+    toastClass = "toast error";
+  } else if (correct === 0) {
+    message = "Nog geen enkel woord is juist.";
+    toastClass = "toast error";
   } else if (correct < puzzle.words.length) {
-    toastEl.textContent = `${correct} van de ${puzzle.words.length} woorden zijn correct.`;
-    toastEl.className = "toast";
+    message = `${correct} van de ${puzzle.words.length} woorden zijn correct.`;
+    toastClass = "toast";
   } else {
-    toastEl.textContent = "Proficiat! Alles is juist!";
-    toastEl.className = "toast";
+    message = "Proficiat! Alles is juist!";
+    toastClass = "toast";
 
     // Show victory modal with video when puzzle is completely solved
     setTimeout(() => {
       showVictoryModal();
     }, 1000); // Delay to let the toast message show first
   }
+
+  toastEl.textContent = message;
+  toastEl.className = toastClass;
 });
 
 document.getElementById("clearBtn").addEventListener("click", () => {
@@ -989,6 +1165,9 @@ document.getElementById("clearBtn").addEventListener("click", () => {
 
   // Close victory modal if open
   closeVictoryModal();
+
+  // Hide virtual keyboard
+  hideVirtualKeyboard();
 
   // Clear localStorage
   clearStorage();
@@ -1039,27 +1218,30 @@ function setupVirtualKeyboard() {
   });
 }
 
-// Show virtual keyboard when a cell is focused on mobile
-document.addEventListener("focusin", (e) => {
-  if (e.target.classList.contains("fil-cell")) {
-    if (window.innerWidth <= 720) {
-      virtualKeyboardEl.classList.remove("hidden");
-    }
+// Show virtual keyboard when a cell is selected on mobile
+function showVirtualKeyboard() {
+  if (window.innerWidth <= 720 && activeWordIndex !== null) {
+    virtualKeyboardEl.classList.remove("hidden");
   }
-});
+}
 
-// Hide virtual keyboard when focus is lost from grid
-document.addEventListener("focusout", (e) => {
-  // Delay hiding to allow for focus to move within the grid
-  setTimeout(() => {
-    const activeElement = document.activeElement;
-    if (!activeElement || !activeElement.classList.contains("fil-cell")) {
-      if (window.innerWidth <= 720) {
-        virtualKeyboardEl.classList.add("hidden");
-      }
-    }
-  }, 100);
-});
+// Hide virtual keyboard
+function hideVirtualKeyboard() {
+  if (window.innerWidth <= 720) {
+    virtualKeyboardEl.classList.add("hidden");
+  }
+}
+
+// Note: showVirtualKeyboard is called in the main selectWord function
 
 // Initialize virtual keyboard
 setupVirtualKeyboard();
+
+// Add keyboard toggle button functionality
+document.getElementById("toggleKeyboardBtn").addEventListener("click", () => {
+  if (virtualKeyboardEl.classList.contains("hidden")) {
+    showVirtualKeyboard();
+  } else {
+    hideVirtualKeyboard();
+  }
+});
