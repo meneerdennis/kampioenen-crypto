@@ -28,6 +28,7 @@ const filipGridEl = document.getElementById("filipGrid");
 const toastEl = document.getElementById("toast");
 const victoryModalEl = document.getElementById("victoryModal");
 const victoryVideoEl = document.getElementById("victoryVideo");
+const virtualKeyboardEl = document.getElementById("virtualKeyboard");
 
 const solutionLength = puzzle.words.length;
 
@@ -143,8 +144,11 @@ puzzle.words.forEach((word, index) => {
     c.dataset.letterIndex = i;
     c.dataset.wordIndex = index;
 
-    // Make cells selectable with pointer (no contentEditable)
-    c.contentEditable = false;
+    // Make cells focusable for mobile keyboard support
+    c.contentEditable = true;
+    c.setAttribute("inputmode", "latin");
+    c.setAttribute("autocapitalize", "characters");
+    c.setAttribute("spellcheck", "false");
 
     // Add intersection styling
     const intersectionInfo = getIntersectionInfo(index, i);
@@ -205,6 +209,42 @@ puzzle.words.forEach((word, index) => {
         cell.classList.remove("selected-cell");
       });
       c.classList.add("selected-cell");
+    });
+
+    // Add input event handler for mobile keyboards
+    c.addEventListener("input", (e) => {
+      handleGridCellInput(c);
+    });
+
+    // Add focus handler
+    c.addEventListener("focus", () => {
+      // If this cell's word is not the active word, make it active
+      if (activeWordIndex !== index) {
+        selectWord(index);
+      }
+      currentCellPosition = i;
+
+      // Visual feedback for selected cell
+      document.querySelectorAll(".fil-cell").forEach((cell) => {
+        cell.classList.remove("selected-cell");
+      });
+      c.classList.add("selected-cell");
+    });
+
+    // Add blur handler to clean up single character input
+    c.addEventListener("blur", () => {
+      // Ensure only single character remains
+      const text = c.textContent.toUpperCase().replace(/[^A-Z]/g, "");
+      if (text.length > 1) {
+        c.textContent = text.charAt(0);
+      } else if (text.length === 0) {
+        c.textContent = "";
+      }
+    });
+
+    // Add keydown handler for navigation
+    c.addEventListener("keydown", (e) => {
+      handleGridCellKeydown(e, index, i);
     });
 
     wrap.appendChild(c);
@@ -953,3 +993,73 @@ document.getElementById("clearBtn").addEventListener("click", () => {
   // Clear localStorage
   clearStorage();
 });
+
+// ----------- VIRTUAL KEYBOARD FUNCTIONALITY -----------
+function setupVirtualKeyboard() {
+  if (!virtualKeyboardEl) return;
+
+  // Add event listeners to all keyboard keys
+  virtualKeyboardEl.addEventListener("click", (e) => {
+    if (!e.target.classList.contains("kb-key")) return;
+
+    const letter = e.target.dataset.letter;
+    const action = e.target.dataset.action;
+
+    if (letter) {
+      // Handle letter input
+      if (activeWordIndex !== null) {
+        const wordIndex = activeWordIndex;
+        const letterIndex = currentCellPosition;
+        handleCellInput(wordIndex, letterIndex, letter);
+
+        // Move to next cell if available
+        if (letterIndex < puzzle.words[wordIndex].answer.length - 1) {
+          focusGridCell(wordIndex, letterIndex + 1);
+        }
+      }
+    } else if (action) {
+      // Handle special actions
+      switch (action) {
+        case "backspace":
+          if (activeWordIndex !== null) {
+            handleBackspace(activeWordIndex, currentCellPosition);
+          }
+          break;
+        case "clear":
+          if (activeWordIndex !== null) {
+            handleDelete(activeWordIndex, currentCellPosition);
+          }
+          break;
+        case "done":
+          // Hide keyboard or perform any completion action
+          virtualKeyboardEl.classList.add("hidden");
+          break;
+      }
+    }
+  });
+}
+
+// Show virtual keyboard when a cell is focused on mobile
+document.addEventListener("focusin", (e) => {
+  if (e.target.classList.contains("fil-cell")) {
+    if (window.innerWidth <= 720) {
+      virtualKeyboardEl.classList.remove("hidden");
+    }
+  }
+});
+
+// Hide virtual keyboard when focus is lost from grid
+document.addEventListener("focusout", (e) => {
+  // Delay hiding to allow for focus to move within the grid
+  setTimeout(() => {
+    const activeElement = document.activeElement;
+    if (!activeElement || !activeElement.classList.contains("fil-cell")) {
+      if (window.innerWidth <= 720) {
+        virtualKeyboardEl.classList.add("hidden");
+      }
+    }
+  }, 100);
+});
+
+// Initialize virtual keyboard
+setupVirtualKeyboard();

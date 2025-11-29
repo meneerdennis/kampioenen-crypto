@@ -20,7 +20,14 @@
 
       <div class="card">
         <div class="layout">
-          <!-- Hoofdsectie met Grid en Active Clue -->
+          <!-- Solution Panel - Now at top -->
+          <div class="solution-panel">
+            <div class="solution-title">Oplossingswoorden</div>
+            <div id="solutionWord" class="solution-word"></div>
+            <div class="solution-hint" id="solutionHint"></div>
+          </div>
+
+          <!-- Main Section with Grid -->
           <section>
             <!-- Active Clue Section (just for display now) -->
             <div id="activeClueSection" class="active-clue-section hidden">
@@ -56,6 +63,51 @@
 
             <div id="toast" class="toast hidden" aria-live="polite"></div>
 
+            <!-- Virtual Keyboard for Mobile -->
+            <div id="virtualKeyboard" class="virtual-keyboard hidden">
+              <div class="keyboard-row">
+                <button class="kb-key" data-letter="Q">Q</button>
+                <button class="kb-key" data-letter="W">W</button>
+                <button class="kb-key" data-letter="E">E</button>
+                <button class="kb-key" data-letter="R">R</button>
+                <button class="kb-key" data-letter="T">T</button>
+                <button class="kb-key" data-letter="Y">Y</button>
+                <button class="kb-key" data-letter="U">U</button>
+                <button class="kb-key" data-letter="I">I</button>
+                <button class="kb-key" data-letter="O">O</button>
+                <button class="kb-key" data-letter="P">P</button>
+              </div>
+              <div class="keyboard-row">
+                <button class="kb-key" data-letter="A">A</button>
+                <button class="kb-key" data-letter="S">S</button>
+                <button class="kb-key" data-letter="D">D</button>
+                <button class="kb-key" data-letter="F">F</button>
+                <button class="kb-key" data-letter="G">G</button>
+                <button class="kb-key" data-letter="H">H</button>
+                <button class="kb-key" data-letter="J">J</button>
+                <button class="kb-key" data-letter="K">K</button>
+                <button class="kb-key" data-letter="L">L</button>
+              </div>
+              <div class="keyboard-row">
+                <button class="kb-key" data-letter="Z">Z</button>
+                <button class="kb-key" data-letter="X">X</button>
+                <button class="kb-key" data-letter="C">C</button>
+                <button class="kb-key" data-letter="V">V</button>
+                <button class="kb-key" data-letter="B">B</button>
+                <button class="kb-key" data-letter="N">N</button>
+                <button class="kb-key" data-letter="M">M</button>
+                <button class="kb-key kb-backspace" data-action="backspace">
+                  ⌫
+                </button>
+              </div>
+              <div class="keyboard-row">
+                <button class="kb-key kb-clear" data-action="clear">
+                  Wissen
+                </button>
+                <button class="kb-key kb-done" data-action="done">Klaar</button>
+              </div>
+            </div>
+
             <!-- Victory Video Modal -->
             <div id="victoryModal" class="victory-modal hidden">
               <div class="victory-modal-content">
@@ -79,21 +131,11 @@
             </div>
           </section>
 
-          <!-- Zijbalk met Clue Lijst en Oplossing -->
-          <aside class="sidebar">
-            <!-- Clue List -->
-            <div class="clue-list-section">
-              <h3>Clues</h3>
-              <div class="clue-list" id="clueList"></div>
-            </div>
-
-            <!-- Solution Panel -->
-            <div class="solution-panel">
-              <div class="solution-title">Oplossingswoord</div>
-              <div id="solutionWord" class="solution-word"></div>
-              <div class="solution-hint" id="solutionHint"></div>
-            </div>
-          </aside>
+          <!-- Clue List - Now at bottom -->
+          <div class="clue-list-section">
+            <h3>Clues</h3>
+            <div class="clue-list" id="clueList"></div>
+          </div>
         </div>
       </div>
 
