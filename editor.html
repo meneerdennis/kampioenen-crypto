@@ -156,6 +156,159 @@
         margin-top: 20px;
       }
 
+      /* Intersection Editor Styles */
+      .intersection-editor {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+      }
+
+      .intersection-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        background: #f9f9f9;
+        margin-bottom: 20px;
+      }
+
+      .intersection-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .intersection-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        background: #111827;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+      }
+
+      .intersection-cells {
+        display: flex;
+        gap: 2px;
+      }
+
+      .intersection-cell {
+        width: 32px;
+        height: 40px;
+        border-radius: 6px;
+        border: 2px solid #d1d5db;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fafb;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        user-select: none;
+      }
+
+      .intersection-cell:hover {
+        border-color: #9ca3af;
+        background: #f3f4f6;
+        transform: scale(1.02);
+      }
+
+      .intersection-cell.selected {
+        border-color: var(--accent);
+        background: #e3f2fd;
+        box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.3);
+      }
+
+      .intersection-cell.solution {
+        border-color: var(--accent);
+        background: #e0edff;
+      }
+
+      .group-selector {
+        margin-bottom: 15px;
+      }
+
+      .group-selector label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .group-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .group-btn {
+        background: #e5e7eb;
+        color: #111827;
+        border: 2px solid transparent;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.15s ease;
+      }
+
+      .group-btn.active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+      }
+
+      .group-btn:hover {
+        border-color: var(--accent);
+      }
+
+      .intersection-instructions {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+
+      .code-output {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 0.85rem;
+        overflow-x: auto;
+        white-space: pre;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .copy-code-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
+
+      .copy-code-btn:hover {
+        background: #218838;
+      }
+
       .warning {
         background: #fff3cd;
         border: 1px solid #ffeaa7;
@@ -274,6 +427,62 @@
         <!-- Word entries will be dynamically added here -->
       </div>
 
+      <!-- Intersection Editor Section -->
+      <div class="intersection-editor">
+        <h2>Intersection Editor</h2>
+        <p>
+          Create intersections between words by selecting cells that should be
+          connected.
+        </p>
+
+        <div class="intersection-instructions">
+          <strong>Instructions:</strong><br />
+          1. Select a group number (A, B, C, etc.)<br />
+          2. Click on cells in the grid below to add them to the selected
+          group<br />
+          3. Each group can have 2 or more cells that will be connected<br />
+          4. Click "Generate Code" to see the JavaScript code for your
+          intersections
+        </div>
+
+        <div class="group-selector">
+          <label>Select Group:</label>
+          <div class="group-buttons" id="groupButtons">
+            <!-- Group buttons will be dynamically added here -->
+          </div>
+        </div>
+
+        <div class="intersection-grid" id="intersectionGrid">
+          <!-- Grid will be dynamically built here -->
+        </div>
+
+        <button
+          class="add-word-btn"
+          onclick="generateIntersectionCode()"
+          style="background: var(--accent)"
+        >
+          Generate Intersection Code
+        </button>
+
+        <button
+          class="add-word-btn"
+          onclick="clearAllSelections()"
+          style="background: #6c757d; margin-top: 10px"
+        >
+          Clear All Selections
+        </button>
+
+        <div id="codeOutput" style="display: none">
+          <h3>Generated JavaScript Code:</h3>
+          <p>
+            Copy this code and add it to your puzzle.js file after the words
+            array:
+          </p>
+          <div class="code-output" id="codeDisplay"></div>
+          <button class="copy-code-btn" onclick="copyCode()">Copy Code</button>
+        </div>
+      </div>
+
       <div class="button-group">
         <button class="download-btn" onclick="downloadPuzzle()">
           Download Updated puzzle.js
@@ -287,6 +496,18 @@
     <script src="puzzle.js"></script>
     <script>
       let wordCounter = 0;
+      let currentGroup = null;
+      let intersectionGroups = {}; // Store selected cells for each group
+      let groupColors = [
+        "#FF6B6B",
+        "#4ECDC4",
+        "#45B7D1",
+        "#96CEB4",
+        "#FECA57",
+        "#FF9FF3",
+        "#54A0FF",
+        "#5F27CD",
+      ];
 
       // Initialize the editor with existing puzzle data
       function initializeEditor() {
@@ -299,6 +520,9 @@
         puzzle.words.forEach((word, index) => {
           addWordEntry(word, index);
         });
+
+        // Initialize intersection editor
+        initializeIntersectionEditor();
       }
 
       function addWordEntry(word, index = null) {
@@ -428,7 +652,47 @@
           jsContent += `\n`;
         });
 
-        jsContent += `  ],\n`;
+        jsContent += `  ],\n\n`;
+
+        // Add intersections if any exist
+        const allIntersections = [];
+        Object.keys(intersectionGroups).forEach((group) => {
+          const cells = intersectionGroups[group];
+          if (cells.length < 2) return;
+
+          for (let i = 0; i < cells.length; i++) {
+            for (let j = i + 1; j < cells.length; j++) {
+              const [word1Index, letter1Pos] = cells[i].split("-").map(Number);
+              const [word2Index, letter2Pos] = cells[j].split("-").map(Number);
+
+              allIntersections.push({
+                word1Index,
+                letter1Pos,
+                word2Index,
+                letter2Pos,
+                group,
+              });
+            }
+          }
+        });
+
+        if (allIntersections.length > 0) {
+          jsContent += `  // Intersections: connects letters between different words\n`;
+          jsContent += `  // Format: { word1Index, letter1Pos, word2Index, letter2Pos, group }\n`;
+          jsContent += `  intersections: [\n`;
+
+          allIntersections.forEach((intersection, index) => {
+            jsContent += `    { word1Index: ${intersection.word1Index}, letter1Pos: ${intersection.letter1Pos}, word2Index: ${intersection.word2Index}, letter2Pos: ${intersection.letter2Pos}, group: "${intersection.group}" }`;
+
+            if (index < allIntersections.length - 1) {
+              jsContent += `,`;
+            }
+            jsContent += `\n`;
+          });
+
+          jsContent += `  ],\n`;
+        }
+
         jsContent += `};\n`;
 
         return jsContent;
@@ -456,6 +720,239 @@
 
       function previewPuzzle() {
         window.open("index.html", "_blank");
+      }
+
+      // Intersection Editor Functions
+      function initializeIntersectionEditor() {
+        buildIntersectionGrid();
+        createGroupButtons();
+      }
+
+      function buildIntersectionGrid() {
+        const gridContainer = document.getElementById("intersectionGrid");
+        const puzzleData = collectPuzzleData();
+
+        gridContainer.innerHTML = "";
+
+        puzzleData.words.forEach((word, wordIndex) => {
+          const row = document.createElement("div");
+          row.className = "intersection-row";
+
+          const num = document.createElement("div");
+          num.className = "intersection-num";
+          num.textContent = wordIndex + 1;
+
+          const cells = document.createElement("div");
+          cells.className = "intersection-cells";
+
+          // Add ghost cells for alignment
+          const maxIndex = Math.max(
+            ...puzzleData.words.map((w) => w.solutionIndex)
+          );
+          const ghostCount = maxIndex - word.solutionIndex;
+
+          for (let i = 0; i < ghostCount; i++) {
+            const ghost = document.createElement("div");
+            ghost.className = "intersection-cell";
+            ghost.style.visibility = "hidden";
+            cells.appendChild(ghost);
+          }
+
+          // Add actual cells
+          for (let i = 0; i < word.answer.length; i++) {
+            const cell = document.createElement("div");
+            cell.className = "intersection-cell";
+            cell.textContent = word.answer[i] || "";
+            cell.dataset.wordIndex = wordIndex;
+            cell.dataset.letterIndex = i;
+
+            if (i === word.solutionIndex) {
+              cell.classList.add("solution");
+            }
+
+            cell.addEventListener("click", () => toggleCellSelection(cell));
+            cells.appendChild(cell);
+          }
+
+          row.appendChild(num);
+          row.appendChild(cells);
+          gridContainer.appendChild(row);
+        });
+      }
+
+      function createGroupButtons() {
+        const container = document.getElementById("groupButtons");
+        container.innerHTML = "";
+
+        // Create buttons for groups A-H
+        for (let i = 0; i < 8; i++) {
+          const letter = String.fromCharCode(65 + i); // A, B, C, etc.
+          const button = document.createElement("button");
+          button.className = "group-btn";
+          button.textContent = `Group ${letter}`;
+          button.dataset.group = letter;
+          button.style.backgroundColor = groupColors[i] + "40";
+          button.style.borderColor = groupColors[i];
+
+          button.addEventListener("click", () => selectGroup(letter));
+          container.appendChild(button);
+        }
+      }
+
+      function selectGroup(group) {
+        currentGroup = group;
+
+        // Update button states
+        document.querySelectorAll(".group-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        document
+          .querySelector(`[data-group="${group}"]`)
+          .classList.add("active");
+
+        // Show existing selections for this group
+        updateCellSelections();
+      }
+
+      function toggleCellSelection(cell) {
+        if (!currentGroup) {
+          alert("Please select a group first!");
+          return;
+        }
+
+        const wordIndex = parseInt(cell.dataset.wordIndex);
+        const letterIndex = parseInt(cell.dataset.letterIndex);
+        const cellKey = `${wordIndex}-${letterIndex}`;
+
+        if (!intersectionGroups[currentGroup]) {
+          intersectionGroups[currentGroup] = [];
+        }
+
+        const existingIndex = intersectionGroups[currentGroup].indexOf(cellKey);
+
+        if (existingIndex >= 0) {
+          // Remove from group
+          intersectionGroups[currentGroup].splice(existingIndex, 1);
+          cell.classList.remove("selected");
+        } else {
+          // Add to group
+          intersectionGroups[currentGroup].push(cellKey);
+          cell.classList.add("selected");
+        }
+      }
+
+      function updateCellSelections() {
+        // Clear all selections
+        document.querySelectorAll(".intersection-cell").forEach((cell) => {
+          cell.classList.remove("selected");
+        });
+
+        // Show selections for current group
+        if (currentGroup && intersectionGroups[currentGroup]) {
+          intersectionGroups[currentGroup].forEach((cellKey) => {
+            const [wordIndex, letterIndex] = cellKey.split("-").map(Number);
+            const cell = document.querySelector(
+              `[data-word-index="${wordIndex}"][data-letter-index="${letterIndex}"]`
+            );
+            if (cell) {
+              cell.classList.add("selected");
+            }
+          });
+        }
+      }
+
+      function generateIntersectionCode() {
+        const puzzleData = collectPuzzleData();
+        const intersections = [];
+
+        // Process each group
+        Object.keys(intersectionGroups).forEach((group) => {
+          const cells = intersectionGroups[group];
+          if (cells.length < 2) return; // Skip groups with less than 2 cells
+
+          // Create pairwise connections
+          for (let i = 0; i < cells.length; i++) {
+            for (let j = i + 1; j < cells.length; j++) {
+              const [word1Index, letter1Pos] = cells[i].split("-").map(Number);
+              const [word2Index, letter2Pos] = cells[j].split("-").map(Number);
+
+              intersections.push({
+                word1Index,
+                letter1Pos,
+                word2Index,
+                letter2Pos,
+                group,
+              });
+            }
+          }
+        });
+
+        if (intersections.length === 0) {
+          alert(
+            "No intersections found. Please select cells for groups first."
+          );
+          return;
+        }
+
+        // Generate JavaScript code
+        let jsContent =
+          "  // Intersections: connects letters between different words\n";
+        jsContent +=
+          "  // Format: { word1Index, letter1Pos, word2Index, letter2Pos, group }\n";
+        jsContent += "  intersections: [\n";
+
+        intersections.forEach((intersection, index) => {
+          jsContent += `    { word1Index: ${intersection.word1Index}, letter1Pos: ${intersection.letter1Pos}, word2Index: ${intersection.word2Index}, letter2Pos: ${intersection.letter2Pos}, group: "${intersection.group}" }`;
+
+          if (index < intersections.length - 1) {
+            jsContent += ",";
+          }
+          jsContent += "\n";
+        });
+
+        jsContent += "  ],\n";
+
+        // Display the code
+        document.getElementById("codeDisplay").textContent = jsContent;
+        document.getElementById("codeOutput").style.display = "block";
+      }
+
+      function clearAllSelections() {
+        intersectionGroups = {};
+        currentGroup = null;
+
+        // Reset button states
+        document.querySelectorAll(".group-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        // Clear all cell selections
+        document.querySelectorAll(".intersection-cell").forEach((cell) => {
+          cell.classList.remove("selected");
+        });
+
+        // Hide code output
+        document.getElementById("codeOutput").style.display = "none";
+      }
+
+      function copyCode() {
+        const code = document.getElementById("codeDisplay").textContent;
+        navigator.clipboard
+          .writeText(code)
+          .then(() => {
+            alert("Code copied to clipboard!");
+          })
+          .catch(() => {
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = code;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+            alert("Code copied to clipboard!");
+          });
       }
 
       // Initialize the editor when the page loads

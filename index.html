@@ -2,7 +2,7 @@
 <html lang="nl">
   <head>
     <meta charset="UTF-8" />
-    <title>Filippine kruiswoordpuzzel</title>
+    <title>Kampioenen Crypto</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- CSS -->
@@ -22,22 +22,13 @@
         <div class="layout">
           <!-- Hoofdsectie met Grid en Active Clue -->
           <section>
-            <!-- Active Clue Section (dynamisch) -->
+            <!-- Active Clue Section (just for display now) -->
             <div id="activeClueSection" class="active-clue-section hidden">
               <div class="active-clue-header">
                 <h3 id="activeClueNumber"></h3>
                 <div id="activeClueLength" class="clue-length"></div>
               </div>
               <div id="activeClueText" class="active-clue-text"></div>
-              <div class="active-clue-input-row">
-                <input
-                  type="text"
-                  id="activeClueInput"
-                  maxlength=""
-                  placeholder="Antwoord"
-                />
-                <div id="activeClueStatus" class="status-dot"></div>
-              </div>
             </div>
 
             <!-- Filippine Grid -->
@@ -51,8 +42,9 @@
                   woorden
                 </div>
                 <div>
-                  ✏️ Typ een letter in één intersectie en het verschijnt
-                  automatisch in alle verbonden posities
+                  ✏️ Klik op een woord in de lijst, dan kun je direct in de grid
+                  typen. Intersectie-letters verschijnen automatisch in alle
+                  verbonden posities!
                 </div>
               </div>
             </div>
@@ -64,10 +56,26 @@
 
             <div id="toast" class="toast hidden" aria-live="polite"></div>
 
-            <div class="tiny-note">
-              Tip: je kunt deze puzzel makkelijk aanpassen in
-              <b>puzzle.js</b> of gebruik de
-              <a href="editor.html" target="_blank">puzzle editor</a>.
+            <!-- Victory Video Modal -->
+            <div id="victoryModal" class="victory-modal hidden">
+              <div class="victory-modal-content">
+                <div class="victory-modal-header">
+                  <h2>🎉 Proficiat! 🎉</h2>
+                  <button
+                    class="victory-close-btn"
+                    onclick="closeVictoryModal()"
+                  >
+                    &times;
+                  </button>
+                </div>
+                <div class="victory-modal-body">
+                  <video id="victoryVideo" controls autoplay>
+                    <source src="Download (1).mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                  <p>Je hebt de Filippine puzzel volledig opgelost!</p>
+                </div>
+              </div>
             </div>
           </section>
 
