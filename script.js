@@ -43,8 +43,18 @@ console.log(
 // Load saved inputs from localStorage after UI is initialized
 setTimeout(loadFromStorage, 100);
 
-// Add global keyboard event listener for typing
+// Add global keyboard event listener for typing (only for non-contentEditable cells)
 document.addEventListener("keydown", (e) => {
+  // Skip if a contentEditable cell is focused (let it handle its own input)
+  const activeElement = document.activeElement;
+  if (
+    activeElement &&
+    activeElement.classList.contains("fil-cell") &&
+    activeElement.contentEditable === "true"
+  ) {
+    return;
+  }
+
   // Only handle keyboard events if there's an active word
   if (activeWordIndex === null) return;
 
@@ -232,7 +242,33 @@ puzzle.words.forEach((word, index) => {
         // For intersection cells, just clean up the text but don't trigger full input handling
         const text = c.textContent.toUpperCase().replace(/[^A-Z]/g, "");
         const newLetter = text.slice(0, 1);
-        c.textContent = newLetter;
+
+        // Store intersection numbers before updating text
+        const intersectionNumbers = Array.from(
+          c.querySelectorAll(".intersection-group-number")
+        );
+
+        // Remove intersection numbers from the cell
+        intersectionNumbers.forEach((num) => {
+          if (num.parentNode === c) {
+            c.removeChild(num);
+          }
+        });
+
+        // Clear all content from the cell
+        while (c.firstChild) {
+          c.removeChild(c.firstChild);
+        }
+
+        // Add the letter as a text node if it exists
+        if (newLetter) {
+          c.appendChild(document.createTextNode(newLetter));
+        }
+
+        // Restore intersection numbers
+        intersectionNumbers.forEach((num) => {
+          c.appendChild(num);
+        });
 
         // If there's a valid letter, handle it through the proper intersection system
         if (newLetter && /[A-Z]/.test(newLetter)) {
@@ -258,7 +294,33 @@ puzzle.words.forEach((word, index) => {
       // Clean up the cell content to prevent accumulation
       setTimeout(() => {
         if (c.textContent.length > 1) {
-          c.textContent = c.textContent.slice(-1);
+          // Store intersection numbers before updating text
+          const intersectionNumbers = Array.from(
+            c.querySelectorAll(".intersection-group-number")
+          );
+
+          // Remove intersection numbers from the cell
+          intersectionNumbers.forEach((num) => {
+            if (num.parentNode === c) {
+              c.removeChild(num);
+            }
+          });
+
+          // Clear all content from the cell
+          while (c.firstChild) {
+            c.removeChild(c.firstChild);
+          }
+
+          // Add the letter as a text node
+          const newLetter = c.textContent.slice(-1);
+          if (newLetter) {
+            c.appendChild(document.createTextNode(newLetter));
+          }
+
+          // Restore intersection numbers
+          intersectionNumbers.forEach((num) => {
+            c.appendChild(num);
+          });
         }
       }, 0);
     });
@@ -462,7 +524,32 @@ function handleCellInput(wordIndex, letterIndex, letter) {
     `[data-word-index="${wordIndex}"][data-letter-index="${letterIndex}"]`
   );
   if (targetCell) {
-    targetCell.textContent = letter;
+    // Store intersection numbers before updating text
+    const intersectionNumbers = Array.from(
+      targetCell.querySelectorAll(".intersection-group-number")
+    );
+
+    // Remove intersection numbers from the cell
+    intersectionNumbers.forEach((num) => {
+      if (num.parentNode === targetCell) {
+        targetCell.removeChild(num);
+      }
+    });
+
+    // Clear all content from the cell
+    while (targetCell.firstChild) {
+      targetCell.removeChild(targetCell.firstChild);
+    }
+
+    // Add the letter as a text node if it exists
+    if (letter && letter.trim()) {
+      targetCell.appendChild(document.createTextNode(letter));
+    }
+
+    // Restore intersection numbers
+    intersectionNumbers.forEach((num) => {
+      targetCell.appendChild(num);
+    });
   }
 
   // Update the visual row
@@ -488,7 +575,34 @@ function handleGridCellInput(cell) {
   // Get the letter that was entered (only allow one letter)
   const text = cell.textContent.toUpperCase().replace(/[^A-Z]/g, "");
   if (text.length > 1) {
-    cell.textContent = text.charAt(0);
+    // Store intersection numbers before updating text
+    const intersectionNumbers = Array.from(
+      cell.querySelectorAll(".intersection-group-number")
+    );
+
+    // Remove intersection numbers from the cell
+    intersectionNumbers.forEach((num) => {
+      if (num.parentNode === cell) {
+        cell.removeChild(num);
+      }
+    });
+
+    // Clear all content from the cell
+    while (cell.firstChild) {
+      cell.removeChild(cell.firstChild);
+    }
+
+    // Add the single letter as a text node
+    const singleLetter = text.charAt(0);
+    if (singleLetter) {
+      cell.appendChild(document.createTextNode(singleLetter));
+    }
+
+    // Restore intersection numbers
+    intersectionNumbers.forEach((num) => {
+      cell.appendChild(num);
+    });
+
     cell.focus();
     // Place cursor at end
     const range = document.createRange();
@@ -562,7 +676,29 @@ function handleGridCellKeydown(e, wordIndex, letterIndex) {
     }
   } else if (e.key === "Escape") {
     e.preventDefault();
-    cell.textContent = "";
+
+    // Store intersection numbers before updating text
+    const intersectionNumbers = Array.from(
+      cell.querySelectorAll(".intersection-group-number")
+    );
+
+    // Remove intersection numbers from the cell
+    intersectionNumbers.forEach((num) => {
+      if (num.parentNode === cell) {
+        cell.removeChild(num);
+      }
+    });
+
+    // Clear all content from the cell
+    while (cell.firstChild) {
+      cell.removeChild(cell.firstChild);
+    }
+
+    // Restore intersection numbers
+    intersectionNumbers.forEach((num) => {
+      cell.appendChild(num);
+    });
+
     handleGridCellInput(cell);
   } else if (e.key === "Backspace") {
     e.preventDefault();
@@ -575,7 +711,34 @@ function handleGridCellKeydown(e, wordIndex, letterIndex) {
     e.preventDefault();
     const letter = e.key.toUpperCase();
     const cell = e.target;
-    cell.textContent = letter;
+
+    // Store intersection numbers before updating text
+    const intersectionNumbers = Array.from(
+      cell.querySelectorAll(".intersection-group-number")
+    );
+
+    // Remove intersection numbers from the cell
+    intersectionNumbers.forEach((num) => {
+      if (num.parentNode === cell) {
+        cell.removeChild(num);
+      }
+    });
+
+    // Clear all content from the cell
+    while (cell.firstChild) {
+      cell.removeChild(cell.firstChild);
+    }
+
+    // Add the letter as a text node
+    if (letter) {
+      cell.appendChild(document.createTextNode(letter));
+    }
+
+    // Restore intersection numbers
+    intersectionNumbers.forEach((num) => {
+      cell.appendChild(num);
+    });
+
     handleGridCellInput(cell);
 
     // Move to next cell if available
@@ -596,8 +759,27 @@ function handleDelete(wordIndex, letterIndex) {
   );
 
   if (targetCell) {
-    // Clear the cell content
-    targetCell.textContent = "";
+    // Store intersection numbers before updating text
+    const intersectionNumbers = Array.from(
+      targetCell.querySelectorAll(".intersection-group-number")
+    );
+
+    // Remove intersection numbers from the cell
+    intersectionNumbers.forEach((num) => {
+      if (num.parentNode === targetCell) {
+        targetCell.removeChild(num);
+      }
+    });
+
+    // Clear all content from the cell
+    while (targetCell.firstChild) {
+      targetCell.removeChild(targetCell.firstChild);
+    }
+
+    // Restore intersection numbers
+    intersectionNumbers.forEach((num) => {
+      targetCell.appendChild(num);
+    });
 
     // Remove the letter from wordInputs
     let newWordValue = currentWordValue;
@@ -635,8 +817,27 @@ function handleBackspace(wordIndex, letterIndex) {
   );
 
   if (targetCell) {
-    // Clear the cell content
-    targetCell.textContent = "";
+    // Store intersection numbers before updating text
+    const intersectionNumbers = Array.from(
+      targetCell.querySelectorAll(".intersection-group-number")
+    );
+
+    // Remove intersection numbers from the cell
+    intersectionNumbers.forEach((num) => {
+      if (num.parentNode === targetCell) {
+        targetCell.removeChild(num);
+      }
+    });
+
+    // Clear all content from the cell
+    while (targetCell.firstChild) {
+      targetCell.removeChild(targetCell.firstChild);
+    }
+
+    // Restore intersection numbers
+    intersectionNumbers.forEach((num) => {
+      targetCell.appendChild(num);
+    });
 
     // Remove the letter from wordInputs
     let newWordValue = currentWordValue;
@@ -737,8 +938,22 @@ function handleCellIntersection(wordIndex, letterIndex, letter) {
             targetCell.querySelectorAll(".intersection-group-number")
           );
 
-          // Update text content
-          targetCell.textContent = letter;
+          // Remove intersection numbers from the cell
+          intersectionNumbers.forEach((num) => {
+            if (num.parentNode === targetCell) {
+              targetCell.removeChild(num);
+            }
+          });
+
+          // Clear all content from the cell
+          while (targetCell.firstChild) {
+            targetCell.removeChild(targetCell.firstChild);
+          }
+
+          // Add the letter as a text node
+          if (letter) {
+            targetCell.appendChild(document.createTextNode(letter));
+          }
 
           // Restore intersection numbers
           intersectionNumbers.forEach((num) => {
@@ -780,8 +995,17 @@ function handleCellIntersection(wordIndex, letterIndex, letter) {
             targetCell.querySelectorAll(".intersection-group-number")
           );
 
-          // Update text content
-          targetCell.textContent = "";
+          // Remove intersection numbers from the cell
+          intersectionNumbers.forEach((num) => {
+            if (num.parentNode === targetCell) {
+              targetCell.removeChild(num);
+            }
+          });
+
+          // Clear all content from the cell
+          while (targetCell.firstChild) {
+            targetCell.removeChild(targetCell.firstChild);
+          }
 
           // Restore intersection numbers
           intersectionNumbers.forEach((num) => {
@@ -948,20 +1172,21 @@ function updateVisualRow(index, text) {
       }
     });
 
-    // Update the text content
+    // Clear all content from the cell
+    while (cell.firstChild) {
+      cell.removeChild(cell.firstChild);
+    }
+
+    // Add the letter as a text node if it exists
     if (ch) {
-      cell.textContent = ch;
-    } else {
-      cell.textContent = "";
+      cell.appendChild(document.createTextNode(ch));
     }
 
     cell.classList.toggle("filled", ch !== "");
 
     // Restore intersection group numbers
     intersectionNumbers.forEach((num) => {
-      if (num.parentNode !== cell) {
-        cell.appendChild(num);
-      }
+      cell.appendChild(num);
     });
   });
 }
