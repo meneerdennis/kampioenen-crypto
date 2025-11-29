@@ -16,6 +16,38 @@ const groupColors = [
 // Other early variables
 let gridRows = []; // Will store references to grid rows
 
+// Force smaller grid cells on mobile
+function enforceMobileSizes() {
+  if (window.innerWidth <= 768) {
+    const cells = document.querySelectorAll(".fil-cell");
+    cells.forEach((cell) => {
+      cell.style.width = "24px";
+      cell.style.height = "30px";
+      cell.style.fontSize = "0.85rem";
+      cell.style.minWidth = "20px";
+      cell.style.minHeight = "24px";
+    });
+
+    const nums = document.querySelectorAll(".fil-num");
+    nums.forEach((num) => {
+      num.style.width = "14px";
+      num.style.height = "14px";
+      num.style.fontSize = "0.55rem";
+    });
+
+    const grid = document.querySelector(".fil-grid");
+    if (grid) {
+      grid.style.padding = "2px 0px";
+      grid.style.gap = "0px";
+    }
+
+    const rows = document.querySelectorAll(".fil-row");
+    rows.forEach((row) => {
+      row.style.gap = "1px";
+    });
+  }
+}
+
 // Titles
 document.getElementById("title").textContent = `Filippine – ${puzzle.title}`;
 document.getElementById(
@@ -373,6 +405,9 @@ puzzle.words.forEach((word, index) => {
     );
   }
 });
+
+// Force mobile sizes after grid is built
+enforceMobileSizes();
 
 // --------- SIMPLE CLUE LIST ----------
 const clueListEl = document.getElementById("clueList");
@@ -1481,4 +1516,9 @@ document.getElementById("toggleKeyboardBtn").addEventListener("click", () => {
   } else {
     hideVirtualKeyboard();
   }
+});
+
+// Re-enforce mobile sizes on resize (for orientation changes)
+window.addEventListener("resize", () => {
+  setTimeout(enforceMobileSizes, 100);
 });
