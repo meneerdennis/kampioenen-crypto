@@ -55,21 +55,40 @@ header p {
 }
 
 .layout {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 24px;
+  align-items: center;
+}
+
+/* Center the solution panel */
+.solution-panel {
+  background: #f8f9fa;
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  margin-bottom: 8px;
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Center the main grid section */
+section {
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Center the clue list */
+.clue-list-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+  width: 100%;
+  max-width: 800px;
 }
 
 @media (max-width: 720px) {
   .layout {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-}
-
-@media (max-width: 720px) {
-  .layout {
-    grid-template-columns: 1fr;
     gap: 16px;
   }
 
@@ -141,12 +160,7 @@ header p {
   line-height: 1.4;
 }
 
-/* Sidebar */
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+/* Note: Sidebar removed - now using single column layout */
 
 .clue-list-section h3 {
   margin: 0 0 12px 0;
@@ -230,13 +244,7 @@ header p {
   box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.3);
 }
 
-/* Enhanced solution panel */
-.solution-panel {
-  background: #f8f9fa;
-  border-radius: var(--radius);
-  padding: 16px;
-  border: 1px solid #e9ecef;
-}
+/* Note: Enhanced solution panel styling consolidated above */
 
 .clue-list {
   display: flex;
@@ -335,19 +343,13 @@ header p {
   background: var(--error);
 }
 
-.solution-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+/* Note: Solution panel flex layout handled by main panel styling */
 
 .solution-title {
   font-weight: 600;
-  margin-bottom: 4px;
-  margin-top: 16px;
-  border-top: 1px solid #e5e7eb;
-  padding-top: 16px;
-  padding-bottom: 16px;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  color: var(--text);
 }
 
 .solution-word {
@@ -430,6 +432,104 @@ button:hover {
   background: #fdecea;
 }
 
+/* Virtual Keyboard for Mobile */
+.virtual-keyboard {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #f8f9fa;
+  border-top: 2px solid #dee2e6;
+  padding: 12px 8px;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.virtual-keyboard.hidden {
+  display: none;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.keyboard-row:last-child {
+  margin-bottom: 0;
+}
+
+.kb-key {
+  background: white;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 12px 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  min-width: 36px;
+  text-align: center;
+  transition: all 0.15s ease;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.kb-key:hover {
+  background: #e9ecef;
+  border-color: var(--accent);
+}
+
+.kb-key:active {
+  background: var(--accent);
+  color: white;
+  transform: scale(0.95);
+}
+
+.kb-backspace,
+.kb-clear,
+.kb-done {
+  min-width: 60px;
+  font-size: 0.9rem;
+}
+
+.kb-clear {
+  background: #fff3cd;
+  border-color: #ffeaa7;
+  color: #856404;
+}
+
+.kb-clear:hover {
+  background: #ffeaa7;
+  border-color: #f39c12;
+}
+
+.kb-done {
+  background: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+.kb-done:hover {
+  background: #c3e6cb;
+  border-color: #28a745;
+}
+
+/* Show virtual keyboard on mobile devices */
+@media (max-width: 720px) {
+  .virtual-keyboard {
+    display: block;
+  }
+}
+
+/* Hide virtual keyboard on larger screens by default */
+@media (min-width: 721px) {
+  .virtual-keyboard {
+    display: none;
+  }
+}
+
 /* ---- VISUELE FILIPPINE ---- */
 
 .filippine-visual {
@@ -506,6 +606,31 @@ button:hover {
   background: #e3f2fd;
   box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.3);
   transform: scale(1.02);
+}
+
+/* Focus styling for mobile */
+.fil-cell:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: #e3f2fd;
+  box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.4);
+  transform: scale(1.02);
+}
+
+/* Ensure good touch targets on mobile */
+@media (max-width: 720px) {
+  .fil-cell {
+    width: 40px;
+    height: 48px;
+    font-size: 1.3rem;
+    min-height: 44px; /* Apple's recommended touch target size */
+  }
+
+  .fil-num {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
 }
 
 .fil-cell.filled {
