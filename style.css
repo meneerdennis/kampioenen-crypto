@@ -72,10 +72,40 @@ header p {
   max-width: 800px;
 }
 
+/* Center the clue list */
+.clue-list-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+  width: 100%;
+  max-width: 800px;
+}
+
 /* Center the main grid section */
 section {
   width: 100%;
   max-width: 800px;
+}
+
+/* Make grid 100% width on mobile */
+@media (max-width: 720px) {
+  section {
+    max-width: 100%;
+    margin: 0;
+    padding: 0 4px;
+  }
+
+  .solution-panel {
+    max-width: 100%;
+    margin: 0 0 8px 0;
+    padding: 12px;
+  }
+
+  .clue-list-section {
+    max-width: 100%;
+    margin: 8px 0 0 0;
+    padding: 8px 0 0 0;
+  }
 }
 
 /* Center the clue list */
@@ -557,6 +587,7 @@ button:hover {
   border: 1px solid #ddd;
   padding: 10px;
   background: #f9f9f9;
+  width: 100%;
 }
 
 .fil-row {
@@ -634,6 +665,11 @@ button:hover {
     width: 24px;
     height: 24px;
     font-size: 0.8rem;
+  }
+
+  /* Ensure grid uses full width on mobile */
+  .fil-grid {
+    padding: 8px 4px;
   }
 }
 
