@@ -437,6 +437,13 @@ section {
   box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
 }
 
+/* Red accent for correct solution letters (center column) */
+.fil-cell.solution.correct-answer {
+  border-color: #4000ff !important;
+  background: rgba(30, 255, 0, 0.415) !important;
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.3);
+}
+
 .fil-row.correct-row {
   background: rgba(46, 204, 113, 0.05);
 }
