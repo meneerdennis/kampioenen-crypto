@@ -1687,6 +1687,13 @@ button:hover {
   color: var(--text);
 }
 
+/* Hide clue popup on desktop screens where clues are shown in sidebar */
+@media (min-width: 1024px) {
+  .clue-popup {
+    display: none !important;
+  }
+}
+
 /* Mobile responsive for clue popup */
 @media (max-width: 768px) {
   .clue-popup {

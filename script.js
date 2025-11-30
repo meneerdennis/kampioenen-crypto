@@ -525,6 +525,11 @@ document.addEventListener("keydown", (e) => {
 
 // Clue Popup Functions
 function showCluePopup(wordIndex, cell) {
+  // Don't show popup on desktop screens where clues are shown in sidebar
+  if (window.innerWidth >= 1024) {
+    return;
+  }
+
   const word = puzzle.words[wordIndex];
   const textEl = cluePopupEl.querySelector(".clue-popup-text");
   textEl.textContent = word.clue;
