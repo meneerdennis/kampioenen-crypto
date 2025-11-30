@@ -11,32 +11,6 @@
   --shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
 }
 
-/* Base desktop styles for fil-cells */
-.fil-cell {
-  width: 36px;
-  height: 44px;
-  font-size: 1.3rem;
-}
-
-/* Base desktop styles for numbers */
-.fil-num {
-  width: 22px;
-  height: 22px;
-  font-size: 0.8rem;
-}
-
-/* Enable zoom on mobile */
-@media screen and (max-width: 768px) {
-  html {
-    -webkit-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
-  }
-
-  body {
-    zoom: 1;
-  }
-}
-
 * {
   box-sizing: border-box;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -50,12 +24,15 @@ body {
   color: var(--text);
   display: flex;
   justify-content: center;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 .app {
   width: 100%;
   max-width: 1400px;
   padding: 24px 16px 40px;
+  box-sizing: border-box;
 }
 
 header {
@@ -87,7 +64,127 @@ header p {
   align-items: center;
 }
 
-/* Center the solution panel */
+/* Center the main grid section */
+section {
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Desktop Layout: Clues on left, Grid on right */
+.desktop-layout {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+/* Desktop clues - hidden by default, shown on wide screens */
+.desktop-clues {
+  display: none;
+  flex-shrink: 0;
+  width: 320px;
+  background: #f8f9fa;
+  border-radius: var(--radius);
+  border: 1px solid #e9ecef;
+  padding: 16px;
+}
+
+/* Desktop clue list styling - aligned with grid */
+.desktop-clues .clue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Match grid row spacing */
+}
+
+.desktop-clues .clue-list-item {
+  padding: 6px 10px;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.85rem;
+  line-height: 1.3;
+  /* Exact height to match grid row */
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.desktop-clues .clue-list-item:hover {
+  background: #f0f8ff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(0, 119, 255, 0.2);
+}
+
+.desktop-clues .clue-list-item.active {
+  background: #e3f2fd;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.3);
+}
+
+.desktop-clues .clue-list-item.correct {
+  border-color: var(--success);
+  background: #f0fdf4;
+}
+
+.desktop-clues .clue-list-item.incorrect {
+  border-color: var(--error);
+  background: #fef2f2;
+}
+
+.desktop-clues .clue-list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.desktop-clues .clue-list-item-number {
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 0.85rem;
+}
+
+.desktop-clues .clue-list-item-length {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.desktop-clues .clue-list-item-text {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  /* Allow text to wrap and be fully visible */
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* Desktop clue spacers - only visible on wider screens */
+.desktop-clue-spacer {
+  height: 20px;
+  background: transparent;
+  margin: 8px 0;
+  display: none; /* Hidden by default, shown on desktop */
+}
+
+/* Show clue spacers only on desktop screens */
+@media (min-width: 1024px) {
+  .desktop-clue-spacer {
+    display: block;
+  }
+}
+
+/* Mobile clues - shown by default, hidden on wide screens */
+.mobile-clues {
+  display: block;
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Solution Panel */
 .solution-panel {
   background: #f8f9fa;
   border-radius: var(--radius);
@@ -98,125 +195,53 @@ header p {
   max-width: 800px;
 }
 
-/* Center the clue list */
-.clue-list-section {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #e5e7eb;
-  width: 100%;
-  max-width: 800px;
-}
-
-/* Center the main grid section */
-section {
-  width: 100%;
-  max-width: 800px;
-}
-
-/* Make grid 100% width on mobile */
-@media (max-width: 720px) {
-  section {
-    max-width: 100%;
-    margin: 0;
-    padding: 0 4px;
-  }
-
-  .solution-panel {
-    max-width: 100%;
-    margin: 0 0 8px 0;
-    padding: 12px;
-  }
-
-  .clue-list-section {
-    max-width: 100%;
-    margin: 8px 0 0 0;
-    padding: 8px 0 0 0;
-  }
-}
-
-/* Center the clue list */
-.clue-list-section {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #e5e7eb;
-  width: 100%;
-  max-width: 800px;
-}
-
-@media (max-width: 720px) {
-  .layout {
-    gap: 16px;
-  }
-
-  .app {
-    padding: 12px 8px 20px;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  .card {
-    padding: 16px;
-  }
-
-  .clue input[type="text"] {
-    padding: 12px 12px;
-    font-size: 1rem;
-    min-height: 44px;
-  }
-
-  button {
-    padding: 12px 18px;
-    font-size: 1rem;
-    min-height: 44px;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .buttons {
-    flex-direction: column;
-  }
-
-  .buttons button {
-    width: 100%;
-  }
-}
-
-/* Active Clue Section */
-.active-clue-section {
-  background: var(--card-bg);
-  border: 2px solid var(--accent);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0, 119, 255, 0.15);
-}
-
-.active-clue-section.hidden {
-  display: none;
-}
-
-.active-clue-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.active-clue-header h3 {
-  margin: 0;
-  color: var(--accent);
-  font-size: 1.1rem;
-}
-
-.active-clue-text {
-  font-size: 1rem;
+.solution-title {
+  font-weight: 600;
   margin-bottom: 12px;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.solution-word {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.solution-letter {
+  width: 32px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  background: #fdfdfd;
+  min-height: 40px;
+}
+
+.solution-letter.filled {
+  border-color: var(--accent);
+  border-style: solid;
+  background: #eef5ff;
+}
+
+.solution-hint {
+  font-size: 0.9rem;
+  color: var(--muted);
   line-height: 1.4;
 }
 
-/* Note: Sidebar removed - now using single column layout */
+/* Clue List Section */
+.clue-list-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+  width: 100%;
+  max-width: 800px;
+}
 
 .clue-list-section h3 {
   margin: 0 0 12px 0;
@@ -283,25 +308,40 @@ section {
   background: #fef2f2;
 }
 
-/* Grid line highlighting */
-.fil-row {
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-  border-radius: 4px;
-  margin: 2px 0;
+/* Active Clue Section */
+.active-clue-section {
+  background: var(--card-bg);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 119, 255, 0.15);
 }
 
-.fil-row:hover {
-  background: #f0f8ff;
+.active-clue-section.hidden {
+  display: none;
 }
 
-.fil-row.active {
-  background: #e3f2fd;
-  box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.3);
+.active-clue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
-/* Note: Enhanced solution panel styling consolidated above */
+.active-clue-header h3 {
+  margin: 0;
+  color: var(--accent);
+  font-size: 1.1rem;
+}
 
+.active-clue-text {
+  font-size: 1rem;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+/* Clue Styling */
 .clue-list {
   display: flex;
   flex-direction: column;
@@ -390,6 +430,23 @@ section {
   background: var(--success);
 }
 
+/* Green accent for correct answers */
+.fil-cell.correct-answer {
+  border-color: var(--success) !important;
+  background: rgba(46, 204, 113, 0.1) !important;
+  box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+}
+
+.fil-row.correct-row {
+  background: rgba(46, 204, 113, 0.05);
+}
+
+.solution-letter.filled.correct-solution {
+  border-color: var(--success);
+  background: rgba(46, 204, 113, 0.15);
+  color: var(--success);
+}
+
 .clue.incorrect {
   border-color: var(--error);
   box-shadow: 0 0 0 1px rgba(231, 76, 60, 0.3);
@@ -399,48 +456,7 @@ section {
   background: var(--error);
 }
 
-/* Note: Solution panel flex layout handled by main panel styling */
-
-.solution-title {
-  font-weight: 600;
-  margin-bottom: 12px;
-  font-size: 1.1rem;
-  color: var(--text);
-}
-
-.solution-word {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.solution-letter {
-  width: 32px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px dashed var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.1rem;
-  background: #fdfdfd;
-}
-
-.solution-letter.filled {
-  border-color: var(--accent);
-  border-style: solid;
-  background: #eef5ff;
-}
-
-.solution-hint {
-  font-size: 0.9rem;
-  color: var(--muted);
-  line-height: 1.4;
-}
-
-/* ---- Buttons ---- */
-
+/* Buttons */
 .buttons {
   margin-top: 16px;
   display: flex;
@@ -461,6 +477,8 @@ button {
   color: white;
   font-weight: 500;
   box-shadow: 0 4px 10px rgba(0, 119, 255, 0.25);
+  min-height: 44px;
+  transition: transform 0.15s ease;
 }
 
 button.secondary {
@@ -497,12 +515,28 @@ button:hover {
   background: #f8f9fa;
   border-top: 2px solid #dee2e6;
   padding: 12px 8px;
-  z-index: 100;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index: 9999;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  display: none;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
 }
 
 .virtual-keyboard.hidden {
   display: none;
+}
+
+/* Show virtual keyboard on smaller screens */
+@media (max-width: 768px) {
+  .virtual-keyboard {
+    display: block !important;
+  }
+
+  .virtual-keyboard.hidden {
+    display: none !important;
+  }
 }
 
 .keyboard-row {
@@ -572,25 +606,7 @@ button:hover {
   border-color: #28a745;
 }
 
-/* Show virtual keyboard on mobile devices */
-@media (max-width: 720px) {
-  .virtual-keyboard {
-    display: block;
-  }
-}
-
-/* Hide virtual keyboard on larger screens by default */
-@media (min-width: 721px) {
-  .virtual-keyboard {
-    display: none;
-  }
-
-  .mobile-only {
-    display: none !important;
-  }
-}
-
-/* ---- VISUELE FILIPPINE ---- */
+/* ---- FILIPPINE VISUAL ---- */
 
 .filippine-visual {
   margin-top: 8px;
@@ -607,24 +623,38 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: 420px;
-  overflow-y: auto;
+  max-height: auto;
+
   min-height: 100px;
   border: 1px solid #ddd;
   padding: 10px;
   background: #f9f9f9;
   width: 100%;
+  overflow-x: auto;
 }
 
 .fil-row {
   display: flex;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-radius: 4px;
+  margin: 0;
+}
+
+.fil-row:hover {
+  background: #f0f8ff;
+}
+
+.fil-row.active {
+  background: #e3f2fd;
+  box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.3);
 }
 
 .fil-num {
-  width: 22px;
-  height: 22px;
+  width: clamp(12px, 2.5vw, 22px);
+  height: clamp(12px, 2.5vw, 22px);
   border-radius: 999px;
   background: #111827;
   color: white;
@@ -632,6 +662,8 @@ button:hover {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  font-size: clamp(0.55rem, 1.8vw, 0.8rem);
+  font-weight: 600;
 }
 
 .fil-cells {
@@ -640,8 +672,9 @@ button:hover {
 }
 
 .fil-cell {
-  width: 36px;
-  height: 44px;
+  /* Responsive sizing that scales with container */
+  width: clamp(14px, 3vw, 36px);
+  height: clamp(20px, 4vw, 44px);
   border-radius: 6px;
   border: 2px solid #d1d5db;
   display: flex;
@@ -650,6 +683,11 @@ button:hover {
   background: #f9fafb;
   transition: all 0.15s ease;
   cursor: pointer;
+  min-width: 14px;
+  min-height: 20px;
+  font-size: clamp(0.6rem, 2vw, 1.3rem);
+  /* Ensure grid can shrink to fit */
+  flex-shrink: 1;
 }
 
 /* Grid cell hover effects */
@@ -676,50 +714,6 @@ button:hover {
   transform: scale(1.02);
 }
 
-/* Prevent focus and selection on mobile devices */
-@media (max-width: 720px) {
-  .fil-cell {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .fil-cell:focus {
-    outline: none;
-    box-shadow: none;
-    background: #f9fafb;
-  }
-}
-
-/* Ensure good touch targets on mobile */
-@media (max-width: 720px) {
-  .fil-cell {
-    width: 32px;
-    height: 40px;
-    font-size: 1rem;
-    min-height: 44px; /* Apple's recommended touch target size */
-  }
-
-  .fil-num {
-    width: 20px;
-    height: 20px;
-    font-size: 0.65rem;
-  }
-
-  /* Ensure grid uses full width on mobile */
-  .fil-grid {
-    padding: 8px 2px;
-    gap: 2px;
-  }
-
-  .fil-row {
-    gap: 4px;
-  }
-}
-
 .fil-cell.filled {
   background: #eef2ff;
 }
@@ -735,18 +729,7 @@ button:hover {
   font-weight: 600;
 }
 
-.fil-cell.intersection-cell::after {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border: 2px solid;
-  border-radius: 3px;
-  pointer-events: none;
-  opacity: 0.7;
-}
+/* Removed colored border styling from intersection cells */
 
 .fil-cell.intersection-cell:hover {
   transform: scale(1.05);
@@ -794,37 +777,6 @@ button:hover {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Make intersection group numbers responsive */
-@media (max-width: 720px) {
-  .intersection-group-number {
-    font-size: 0.6rem;
-    width: 14px;
-    height: 14px;
-    bottom: -5px;
-    right: -5px;
-  }
-}
-
-@media (max-width: 480px) {
-  .intersection-group-number {
-    font-size: 0.55rem;
-    width: 12px;
-    height: 12px;
-    bottom: -4px;
-    right: -4px;
-  }
-}
-
-@media (max-width: 380px) {
-  .intersection-group-number {
-    font-size: 0.5rem;
-    width: 10px;
-    height: 10px;
-    bottom: -3px;
-    right: -3px;
-  }
-}
-
 /* Highlight cells with intersection conflicts */
 .fil-cell.intersection-cell.conflict {
   border-color: var(--error) !important;
@@ -847,194 +799,23 @@ button:hover {
   }
 }
 
-/* Onzichtbare 'padding' vakjes */
+/* Invisible 'padding' cells */
 .fil-cell.ghost {
   border: none !important;
   background: transparent !important;
 }
 
-/* Extra verticale ruimte tussen groepen in de Filippine-kolom */
+/* Extra vertical space between groups in the Filippine column */
 .fil-group-spacer {
   height: 20px;
   background: transparent;
   margin: 8px 0;
 }
 
-/* Spaties tussen de woorden van het oplossingswoord */
+/* Spaces between the words of the solution word */
 .solution-spacer {
   width: 16px;
   height: 1px;
-}
-
-@media (max-width: 480px) {
-  .app {
-    padding: 8px 4px 16px;
-  }
-
-  h1 {
-    font-size: 1.3rem;
-    line-height: 1.2;
-  }
-
-  .card {
-    padding: 12px;
-  }
-
-  header p {
-    font-size: 0.9rem;
-  }
-
-  .clue {
-    padding: 12px;
-  }
-
-  .clue-text {
-    font-size: 0.9rem;
-  }
-
-  .clue-header {
-    font-size: 0.85rem;
-  }
-
-  .clue input[type="text"] {
-    padding: 10px 10px;
-    font-size: 1rem;
-  }
-
-  .solution-letter {
-    width: 28px;
-    height: 36px;
-    font-size: 1rem;
-  }
-
-  .fil-cell {
-    width: 28px;
-    height: 36px;
-    font-size: 0.9rem;
-  }
-
-  .fil-num {
-    width: 18px;
-    height: 18px;
-    font-size: 0.6rem;
-  }
-
-  /* Reduce gap and padding for smaller screens */
-  .fil-grid {
-    padding: 6px 1px;
-    gap: 1px;
-  }
-
-  .fil-row {
-    gap: 3px;
-  }
-}
-
-/* Even smaller letterboxes for very small screens */
-@media (max-width: 380px) {
-  .fil-cell {
-    width: 24px;
-    height: 32px;
-    font-size: 0.8rem;
-  }
-
-  .fil-num {
-    width: 16px;
-    height: 16px;
-    font-size: 0.55rem;
-  }
-
-  .solution-letter {
-    width: 24px;
-    height: 32px;
-    font-size: 0.9rem;
-  }
-
-  /* Even tighter spacing for very small screens */
-  .fil-grid {
-    padding: 4px 0px;
-    gap: 1px;
-  }
-
-  .fil-row {
-    gap: 2px;
-  }
-}
-
-/* Additional mobile-friendly improvements */
-@media (max-width: 360px) {
-  .app {
-    padding: 6px 2px 12px;
-  }
-
-  .card {
-    padding: 8px;
-  }
-
-  .clue {
-    padding: 8px;
-  }
-
-  button {
-    padding: 14px 16px;
-    font-size: 0.95rem;
-  }
-
-  /* Even smaller components for very small screens */
-  .fil-cell {
-    width: 22px;
-    height: 30px;
-    font-size: 0.7rem;
-  }
-
-  .fil-num {
-    width: 14px;
-    height: 14px;
-    font-size: 0.5rem;
-  }
-
-  .solution-letter {
-    width: 22px;
-    height: 30px;
-    font-size: 0.85rem;
-  }
-
-  /* Minimal spacing for smallest screens */
-  .fil-grid {
-    padding: 2px 0px;
-    gap: 0px;
-  }
-
-  .fil-row {
-    gap: 1px;
-  }
-}
-
-/* Touch-friendly improvements for all screen sizes */
-@media (hover: none) and (pointer: coarse) {
-  .clue {
-    padding: 14px;
-  }
-
-  .clue input[type="text"] {
-    padding: 14px 12px;
-    min-height: 48px;
-  }
-
-  button {
-    min-height: 48px;
-    padding: 14px 20px;
-  }
-
-  .solution-letter {
-    min-height: 44px;
-  }
-
-  /* Ensure cells maintain minimum touch size while being compact */
-  .fil-cell {
-    min-width: 24px;
-    min-height: 28px;
-  }
 }
 
 /* Victory Modal Styles */
@@ -1132,7 +913,624 @@ button:hover {
   font-weight: 500;
 }
 
-/* Responsive design for victory modal */
+/* ====== RESPONSIVE DESIGN ====== */
+
+/* Desktop Layout - Show clues on left for wide screens */
+@media (min-width: 1024px) {
+  .desktop-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .desktop-clues {
+    display: block;
+    flex-shrink: 0;
+    width: 320px;
+  }
+
+  .mobile-clues {
+    display: none;
+  }
+
+  /* Adjust grid section for desktop layout */
+  section {
+    flex: 1;
+    max-width: none;
+  }
+
+  /* Ensure the grid can grow to fill available space */
+  .filippine-visual {
+    max-width: none;
+  }
+
+  /* Optimize grid sizing for desktop - flexible alignment */
+  .fil-grid {
+    padding: 16px;
+    gap: 4px;
+  }
+
+  .fil-row {
+    gap: 6px;
+    margin: 0; /* Remove margins for perfect alignment */
+    display: flex;
+    align-items: center;
+    height: 44px; /* Exact height to match clues */
+    box-sizing: border-box;
+  }
+
+  /* Show group spacers in desktop layout for visual grouping */
+  .fil-group-spacer {
+    display: block;
+    height: 20px;
+    background: transparent;
+    margin: 8px 0;
+  }
+
+  .fil-cell {
+    width: 32px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+
+  .fil-num {
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+  }
+
+  /* Make buttons full width on desktop too */
+  .buttons {
+    flex-direction: column;
+    margin-top: 24px;
+  }
+
+  .buttons button {
+    width: 100%;
+  }
+
+  /* Desktop clue item exact sizing */
+  .desktop-clues .clue-list-item {
+    height: 44px;
+    padding: 6px 10px;
+  }
+}
+
+/* Extra large desktop screens */
+@media (min-width: 1400px) {
+  .desktop-clues {
+    width: 350px;
+  }
+
+  .desktop-clues .clue-list-item {
+    height: 48px; /* Adjust for larger grid rows */
+    font-size: 0.9rem;
+    padding: 7px 12px;
+  }
+
+  .fil-row {
+    height: 48px; /* Match clue item height exactly */
+  }
+
+  .fil-cell {
+    width: 36px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .fil-num {
+    width: 22px;
+    height: 22px;
+    font-size: 0.8rem;
+  }
+
+  .fil-grid {
+    padding: 18px;
+  }
+}
+
+/* Allow natural scrolling behavior */
+
+/* Mobile devices - tablets */
+@media (max-width: 768px) {
+  .app {
+    padding: 16px 12px 24px;
+  }
+
+  .layout {
+    gap: 16px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  /* Mobile-friendly clue inputs */
+  .clue input[type="text"] {
+    padding: 10px 10px;
+    font-size: 0.9rem;
+    min-height: 40px;
+  }
+
+  .clue-list-item {
+    padding: 8px;
+  }
+
+  .clue {
+    padding: 8px 10px;
+  }
+
+  .clue-text {
+    font-size: 0.85rem;
+  }
+
+  /* Solution panel sizing */
+  .solution-panel {
+    padding: 10px;
+  }
+
+  .solution-title {
+    font-size: 0.95rem;
+  }
+
+  .solution-letter {
+    width: 24px;
+    height: 32px;
+    font-size: 0.9rem;
+    min-height: 32px;
+  }
+
+  .solution-word {
+    gap: 4px;
+  }
+
+  .solution-hint {
+    font-size: 0.8rem;
+  }
+
+  /* Active clue section sizing */
+  .active-clue-section {
+    padding: 12px;
+  }
+
+  .active-clue-header h3 {
+    font-size: 1rem;
+  }
+
+  .active-clue-text {
+    font-size: 0.9rem;
+  }
+
+  .active-clue-length {
+    font-size: 0.8rem;
+  }
+
+  .solution-hint {
+    font-size: 0.85rem;
+  }
+
+  button {
+    padding: 12px 18px;
+    font-size: 1rem;
+    min-height: 44px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .buttons button {
+    width: 100%;
+  }
+
+  /* Mobile sizing for filippine grid */
+  .fil-grid {
+    padding: 8px 4px;
+    gap: 3px;
+    min-height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .fil-row {
+    gap: 4px;
+  }
+
+  .fil-cell {
+    width: 20px !important;
+    height: 26px !important;
+    min-width: 20px;
+    min-height: 26px;
+    font-size: 0.9rem;
+  }
+
+  .fil-num {
+    width: 16px;
+    height: 16px;
+    font-size: 0.65rem;
+  }
+
+  .intersection-group-number {
+    font-size: 0.6rem;
+    width: 12px;
+    height: 12px;
+    bottom: -4px;
+    right: -4px;
+  }
+}
+
+/* Small mobile devices and iPhone XR (414px) */
+@media (max-width: 480px) {
+  .app {
+    padding: 12px 8px 20px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  header p {
+    font-size: 0.9rem;
+  }
+
+  .clue {
+    padding: 8px;
+  }
+
+  .clue-text {
+    font-size: 0.8rem;
+  }
+
+  .clue-header {
+    font-size: 0.8rem;
+  }
+
+  .clue input[type="text"] {
+    padding: 8px 8px;
+    font-size: 0.9rem;
+  }
+
+  .clue-list-item {
+    padding: 6px;
+  }
+
+  .solution-letter {
+    width: 24px;
+    height: 32px;
+    font-size: 0.9rem;
+    min-height: 32px;
+  }
+
+  .solution-word {
+    gap: 4px;
+  }
+
+  .solution-panel {
+    padding: 8px;
+  }
+
+  .solution-title {
+    font-size: 0.9rem;
+  }
+
+  .solution-hint {
+    font-size: 0.75rem;
+  }
+
+  .active-clue-section {
+    padding: 10px;
+  }
+
+  .active-clue-header h3 {
+    font-size: 0.95rem;
+  }
+
+  .active-clue-text {
+    font-size: 0.85rem;
+  }
+
+  .active-clue-length {
+    font-size: 0.75rem;
+  }
+
+  /* Smaller filippine grid for small phones */
+  .fil-grid {
+    padding: 6px 2px;
+    gap: 2px;
+    min-height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .fil-row {
+    gap: 3px;
+  }
+
+  .fil-cell {
+    width: 16px !important;
+    height: 22px !important;
+    min-width: 16px;
+    min-height: 22px;
+    font-size: 0.8rem;
+  }
+
+  .fil-num {
+    width: 16px;
+    height: 16px;
+    font-size: 0.65rem;
+  }
+
+  .intersection-group-number {
+    font-size: 0.55rem;
+    width: 10px;
+    height: 10px;
+    bottom: -3px;
+    right: -3px;
+  }
+}
+
+/* Very small mobile devices */
+@media (max-width: 380px) {
+  .app {
+    padding: 8px 4px 16px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+
+  .card {
+    padding: 10px;
+  }
+
+  .clue {
+    padding: 6px;
+  }
+
+  .clue-list-item {
+    padding: 4px;
+  }
+
+  .clue-text {
+    font-size: 0.75rem;
+  }
+
+  .clue-header {
+    font-size: 0.75rem;
+  }
+
+  .clue input[type="text"] {
+    padding: 6px 6px;
+    font-size: 0.85rem;
+  }
+
+  button {
+    padding: 14px 16px;
+    font-size: 0.95rem;
+  }
+
+  /* Compact filippine grid for very small screens */
+  .fil-grid {
+    padding: 4px 1px;
+    gap: 1px;
+    min-height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .fil-row {
+    gap: 2px;
+  }
+
+  .fil-cell {
+    width: 14px !important;
+    height: 18px !important;
+    min-width: 14px;
+    min-height: 18px;
+    font-size: 0.7rem;
+  }
+
+  .fil-num {
+    width: 14px;
+    height: 14px;
+    font-size: 0.6rem;
+  }
+
+  .solution-letter {
+    width: 18px;
+    height: 24px;
+    font-size: 0.7rem;
+    min-height: 24px;
+  }
+
+  .solution-word {
+    gap: 3px;
+  }
+
+  .solution-panel {
+    padding: 6px;
+  }
+
+  .solution-title {
+    font-size: 0.85rem;
+  }
+
+  .solution-hint {
+    font-size: 0.7rem;
+  }
+
+  .active-clue-section {
+    padding: 8px;
+  }
+
+  .active-clue-header h3 {
+    font-size: 0.9rem;
+  }
+
+  .active-clue-text {
+    font-size: 0.8rem;
+  }
+
+  .active-clue-length {
+    font-size: 0.7rem;
+  }
+
+  .intersection-group-number {
+    font-size: 0.5rem;
+    width: 8px;
+    height: 8px;
+    bottom: -2px;
+    right: -2px;
+  }
+}
+
+/* Extra small devices - ensure minimum touch targets */
+@media (max-width: 360px) {
+  .app {
+    padding: 6px 2px 12px;
+  }
+
+  .card {
+    padding: 8px;
+  }
+
+  /* Ensure cells maintain minimum touch-friendly size */
+  .fil-cell {
+    width: 12px !important;
+    height: 16px !important;
+    min-width: 12px;
+    min-height: 16px;
+    font-size: 0.6rem;
+  }
+
+  .fil-num {
+    width: 12px;
+    height: 12px;
+    font-size: 0.55rem;
+  }
+
+  .solution-letter {
+    width: 16px;
+    height: 22px;
+    font-size: 0.65rem;
+    min-height: 22px;
+  }
+
+  .solution-word {
+    gap: 2px;
+  }
+
+  .solution-panel {
+    padding: 4px;
+  }
+
+  .solution-title {
+    font-size: 0.8rem;
+  }
+
+  .solution-hint {
+    font-size: 0.65rem;
+  }
+
+  .active-clue-section {
+    padding: 6px;
+  }
+
+  .active-clue-header h3 {
+    font-size: 0.85rem;
+  }
+
+  .active-clue-text {
+    font-size: 0.75rem;
+  }
+
+  .active-clue-length {
+    font-size: 0.65rem;
+  }
+
+  /* Minimal spacing for smallest screens */
+  .fil-grid {
+    padding: 2px 0px;
+    gap: 0px;
+    min-height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .fil-row {
+    gap: 1px;
+  }
+
+  .clue {
+    padding: 4px;
+  }
+
+  .clue-list-item {
+    padding: 2px;
+  }
+
+  .clue-text {
+    font-size: 0.7rem;
+  }
+
+  .clue-header {
+    font-size: 0.7rem;
+  }
+
+  .clue input[type="text"] {
+    padding: 4px 4px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Touch-friendly improvements for all touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .clue {
+    padding: 12px;
+  }
+
+  .clue input[type="text"] {
+    padding: 12px 10px;
+    min-height: 44px;
+  }
+
+  button {
+    min-height: 48px;
+    padding: 14px 20px;
+  }
+
+  .solution-letter {
+    min-height: 40px;
+  }
+
+  /* Ensure cells maintain minimum touch size while being compact */
+  .fil-cell {
+    min-width: 16px;
+    min-height: 18px;
+  }
+
+  /* Always show virtual keyboard on touch devices */
+  .virtual-keyboard {
+    display: block !important;
+  }
+
+  .virtual-keyboard.hidden {
+    display: none !important;
+  }
+}
+
+/* Responsive victory modal */
 @media (max-width: 768px) {
   .victory-modal-content {
     max-width: 95vw;
@@ -1174,5 +1572,100 @@ button:hover {
 
   .victory-modal-body video {
     max-height: 40vh;
+  }
+}
+
+/* Hide mobile-only elements on larger screens */
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* Desktop sizes for large viewports */
+@media (min-width: 1200px) {
+  .fil-cell {
+    width: 36px;
+    height: 44px;
+    font-size: 1.3rem;
+  }
+
+  .fil-num {
+    width: 22px;
+    height: 22px;
+    font-size: 0.8rem;
+  }
+
+  .fil-grid {
+    padding: 10px;
+    gap: 4px;
+  }
+
+  .fil-row {
+    gap: 6px;
+  }
+}
+
+/* Clue Popup */
+.clue-popup {
+  position: absolute;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  max-width: 250px;
+  min-width: 150px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.clue-popup.hidden {
+  display: none;
+}
+
+.clue-popup-text {
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.clue-popup-close {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.15s ease;
+}
+
+.clue-popup-close:hover {
+  background: #f0f0f0;
+  color: var(--text);
+}
+
+/* Mobile responsive for clue popup */
+@media (max-width: 768px) {
+  .clue-popup {
+    max-width: 200px;
+    min-width: 120px;
+    font-size: 0.85rem;
+    padding: 10px;
+  }
+
+  .clue-popup-close {
+    font-size: 1.1rem;
+    width: 18px;
+    height: 18px;
   }
 }

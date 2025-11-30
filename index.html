@@ -5,11 +5,11 @@
     <title>Kampioenen Crypto</title>
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, user-scalable=yes, maximum-scale=5"
+      content="width=device-width, initial-scale=1, user-scalable=yes, maximum-scale=10"
     />
 
     <!-- CSS -->
-    <link rel="stylesheet" href="style.css?v=2" />
+    <link rel="stylesheet" href="style.css?v=4" />
   </head>
   <body>
     <div class="app">
@@ -30,125 +30,137 @@
             <div class="solution-hint" id="solutionHint"></div>
           </div>
 
-          <!-- Main Section with Grid -->
-          <section>
-            <!-- Active Clue Section (just for display now) -->
-            <div id="activeClueSection" class="active-clue-section hidden">
-              <div class="active-clue-header">
-                <h3 id="activeClueNumber"></h3>
-                <div id="activeClueLength" class="clue-length"></div>
-              </div>
-              <div id="activeClueText" class="active-clue-text"></div>
+          <!-- Desktop Layout: Clues on left, Grid on right -->
+          <div class="desktop-layout">
+            <!-- Clue List for Desktop -->
+            <div class="clue-list-section desktop-clues">
+              <h3>Clues</h3>
+              <div class="clue-list" id="clueList"></div>
             </div>
 
-            <!-- Filippine Grid -->
-            <div class="filippine-visual">
-              <div class="visual-title">Filippine Grid</div>
-              <div id="filipGrid" class="fil-grid"></div>
-              <div class="fil-legend">
-                <div><strong>Kleuren = letter intersecties</strong></div>
-                <div>
-                  🟦 Letters in gekleurde vakjes zijn verbonden met andere
-                  woorden
+            <!-- Main Section with Grid -->
+            <section>
+              <!-- Active Clue Section (just for display now) -->
+              <!-- <div id="activeClueSection" class="active-clue-section hidden">
+                <div class="active-clue-header">
+                  <h3 id="activeClueNumber"></h3>
+                  <div id="activeClueLength" class="clue-length"></div>
                 </div>
-                <div>
-                  ✏️ Klik op een woord in de lijst, dan kun je direct in de grid
-                  typen. Intersectie-letters verschijnen automatisch in alle
-                  verbonden posities!
+                <div id="activeClueText" class="active-clue-text"></div>
+              </div> -->
+
+              <!-- Filippine Grid -->
+              <div class="filippine-visual">
+                <div class="visual-title">Filippine Grid</div>
+                <div id="filipGrid" class="fil-grid"></div>
+                <div class="fil-legend">
+                  <div><strong>Kleuren = letter intersecties</strong></div>
+                  <div>
+                    🟦 Letters in gekleurde vakjes zijn verbonden met andere
+                    woorden
+                  </div>
+                  <div>
+                    ✏️ Klik op een woord in de lijst, dan kun je direct in de
+                    grid typen. Intersectie-letters verschijnen automatisch in
+                    alle verbonden posities!
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="buttons">
-              <button id="checkBtn">Controleer antwoorden</button>
-              <button class="secondary" id="clearBtn">Alles wissen</button>
-              <button class="secondary mobile-only" id="toggleKeyboardBtn">
-                ⌨️ Toetsenbord
-              </button>
-            </div>
-
-            <div id="toast" class="toast hidden" aria-live="polite"></div>
-
-            <!-- Virtual Keyboard for Mobile -->
-            <div id="virtualKeyboard" class="virtual-keyboard hidden">
-              <div class="keyboard-row">
-                <button class="kb-key" data-letter="A">A</button>
-                <button class="kb-key" data-letter="Z">Z</button>
-                <button class="kb-key" data-letter="E">E</button>
-                <button class="kb-key" data-letter="R">R</button>
-                <button class="kb-key" data-letter="T">T</button>
-                <button class="kb-key" data-letter="Y">Y</button>
-                <button class="kb-key" data-letter="U">U</button>
-                <button class="kb-key" data-letter="I">I</button>
-                <button class="kb-key" data-letter="O">O</button>
-                <button class="kb-key" data-letter="P">P</button>
-              </div>
-              <div class="keyboard-row">
-                <button class="kb-key" data-letter="Q">Q</button>
-                <button class="kb-key" data-letter="S">S</button>
-                <button class="kb-key" data-letter="D">D</button>
-                <button class="kb-key" data-letter="F">F</button>
-                <button class="kb-key" data-letter="G">G</button>
-                <button class="kb-key" data-letter="H">H</button>
-                <button class="kb-key" data-letter="J">J</button>
-                <button class="kb-key" data-letter="K">K</button>
-                <button class="kb-key" data-letter="L">L</button>
-                <button class="kb-key" data-letter="M">M</button>
-              </div>
-              <div class="keyboard-row">
-                <button class="kb-key" data-letter="W">W</button>
-                <button class="kb-key" data-letter="X">X</button>
-                <button class="kb-key" data-letter="C">C</button>
-                <button class="kb-key" data-letter="V">V</button>
-                <button class="kb-key" data-letter="B">B</button>
-                <button class="kb-key" data-letter="N">N</button>
-                <button class="kb-key kb-backspace" data-action="backspace">
-                  ⌫
+              <div class="buttons">
+                <button id="checkBtn">Controleer antwoorden</button>
+                <button class="secondary" id="clearBtn">Alles wissen</button>
+                <button class="secondary mobile-only" id="toggleKeyboardBtn">
+                  ⌨️ Toetsenbord
                 </button>
               </div>
-              <div class="keyboard-row">
-                <button class="kb-key kb-clear" data-action="clear">
-                  Wissen
-                </button>
-                <button class="kb-key kb-done" data-action="done">Klaar</button>
-              </div>
-            </div>
 
-            <!-- Victory Video Modal -->
-            <div id="victoryModal" class="victory-modal hidden">
-              <div class="victory-modal-content">
-                <div class="victory-modal-header">
-                  <h2>🎉 Proficiat! 🎉</h2>
-                  <button
-                    class="victory-close-btn"
-                    onclick="closeVictoryModal()"
-                  >
-                    &times;
+              <div id="toast" class="toast hidden" aria-live="polite"></div>
+
+              <!-- Virtual Keyboard for Mobile -->
+              <div id="virtualKeyboard" class="virtual-keyboard hidden">
+                <div class="keyboard-row">
+                  <button class="kb-key" data-letter="A">A</button>
+                  <button class="kb-key" data-letter="Z">Z</button>
+                  <button class="kb-key" data-letter="E">E</button>
+                  <button class="kb-key" data-letter="R">R</button>
+                  <button class="kb-key" data-letter="T">T</button>
+                  <button class="kb-key" data-letter="Y">Y</button>
+                  <button class="kb-key" data-letter="U">U</button>
+                  <button class="kb-key" data-letter="I">I</button>
+                  <button class="kb-key" data-letter="O">O</button>
+                  <button class="kb-key" data-letter="P">P</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="kb-key" data-letter="Q">Q</button>
+                  <button class="kb-key" data-letter="S">S</button>
+                  <button class="kb-key" data-letter="D">D</button>
+                  <button class="kb-key" data-letter="F">F</button>
+                  <button class="kb-key" data-letter="G">G</button>
+                  <button class="kb-key" data-letter="H">H</button>
+                  <button class="kb-key" data-letter="J">J</button>
+                  <button class="kb-key" data-letter="K">K</button>
+                  <button class="kb-key" data-letter="L">L</button>
+                  <button class="kb-key" data-letter="M">M</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="kb-key" data-letter="W">W</button>
+                  <button class="kb-key" data-letter="X">X</button>
+                  <button class="kb-key" data-letter="C">C</button>
+                  <button class="kb-key" data-letter="V">V</button>
+                  <button class="kb-key" data-letter="B">B</button>
+                  <button class="kb-key" data-letter="N">N</button>
+                  <button class="kb-key kb-backspace" data-action="backspace">
+                    ⌫
                   </button>
                 </div>
-                <div class="victory-modal-body">
-                  <video id="victoryVideo" controls autoplay>
-                    <source src="Download (1).mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                  <p>Je hebt de Filippine puzzel volledig opgelost!</p>
+                <div class="keyboard-row">
+                  <button class="kb-key kb-clear" data-action="clear">
+                    Wissen
+                  </button>
+                  <button class="kb-key kb-done" data-action="done">
+                    Klaar
+                  </button>
                 </div>
               </div>
-            </div>
-          </section>
 
-          <!-- Clue List - Now at bottom -->
-          <div class="clue-list-section">
+              <!-- Victory Video Modal -->
+              <div id="victoryModal" class="victory-modal hidden">
+                <div class="victory-modal-content">
+                  <div class="victory-modal-header">
+                    <h2>🎉 Proficiat! 🎉</h2>
+                    <button
+                      class="victory-close-btn"
+                      onclick="closeVictoryModal()"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                  <div class="victory-modal-body">
+                    <video id="victoryVideo" controls autoplay>
+                      <source src="Download (1).mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                    <p>Je hebt de Filippine puzzel volledig opgelost!</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Mobile Clue List - Hidden on desktop -->
+          <div class="clue-list-section mobile-clues">
             <h3>Clues</h3>
-            <div class="clue-list" id="clueList"></div>
+            <div class="clue-list" id="clueListMobile"></div>
           </div>
         </div>
       </div>
 
-      <footer>
-        Eenvoudige webapp – volledig client-side, geen server nodig.
-        <a href="editor.html" target="_blank">Puzzle Editor</a>
-      </footer>
+      <!-- Clue Popup -->
+      <div id="cluePopup" class="clue-popup hidden">
+        <div class="clue-popup-text"></div>
+        <button class="clue-popup-close">&times;</button>
+      </div>
     </div>
 
     <!-- Data (woorden en oplossing) -->
