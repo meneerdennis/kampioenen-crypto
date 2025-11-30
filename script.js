@@ -671,8 +671,8 @@ function handleCellInput(wordIndex, letterIndex, letter) {
   // Update the visual row
   updateVisualRow(wordIndex, newWordValue);
 
-  // Update validation (without green styling during typing)
-  checkSingle(wordIndex, false);
+  // Update validation (with auto-check for victory)
+  checkSingle(wordIndex, true);
 
   // Save to localStorage
   saveToStorage();
@@ -749,8 +749,8 @@ function handleGridCellInput(cell) {
   // Update the visual row
   updateVisualRow(wordIndex, newWordValue);
 
-  // Update validation (without green styling during typing)
-  checkSingle(wordIndex, false);
+  // Update validation (with auto-check for victory)
+  checkSingle(wordIndex, true);
 
   // Save to localStorage
   saveToStorage();
@@ -1345,7 +1345,7 @@ function updateVisualRow(index, text) {
 }
 
 // ----------- VALIDATIE -----------
-function checkSingle(i) {
+function checkSingle(i, autoCheck = true) {
   const word = puzzle.words[i];
   const value = wordInputs[i].trim().toUpperCase();
 
@@ -1399,6 +1399,44 @@ function checkSingle(i) {
     solutionCells[i].textContent = "";
     solutionCells[i].classList.remove("filled", "correct-solution");
   }
+
+  // Auto-check for victory when a word becomes correct
+  if (autoCheck && correct) {
+    setTimeout(checkForAutoVictory, 100); // Small delay to allow styling to update
+  }
+}
+
+// Check if all words are correct (for automatic victory detection)
+function checkAllWordsCorrect() {
+  for (let i = 0; i < puzzle.words.length; i++) {
+    const word = puzzle.words[i];
+    const value = wordInputs[i].trim().toUpperCase();
+
+    if (value !== word.answer) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Check for automatic victory (when all words turn green)
+function checkForAutoVictory() {
+  // Only check if all words are filled and correct
+  if (!checkAllWordsCorrect()) {
+    return;
+  }
+
+  // Check for intersection conflicts
+  const conflicts = checkIntersections();
+
+  // If there are conflicts, don't trigger victory
+  if (conflicts.length > 0) {
+    return;
+  }
+
+  // If we reach here, all words are correct and there are no conflicts
+  // Automatically show the victory modal
+  showVictoryModal();
 }
 
 // Check intersection consistency
@@ -1491,7 +1529,7 @@ document.getElementById("checkBtn").addEventListener("click", () => {
   let correct = 0;
 
   puzzle.words.forEach((word, i) => {
-    checkSingle(i);
+    checkSingle(i, false); // Don't trigger auto-check during manual check
     if (wordInputs[i].trim().toUpperCase() === word.answer) {
       correct++;
     }
