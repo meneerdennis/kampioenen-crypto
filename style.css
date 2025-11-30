@@ -777,6 +777,39 @@ button:hover {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+/* Mobile responsive for intersection group numbers */
+@media (max-width: 768px) {
+  .intersection-group-number {
+    font-size: 0.6rem;
+    width: 12px;
+    height: 12px;
+    bottom: -4px;
+    right: -4px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .intersection-group-number {
+    font-size: 0.55rem;
+    width: 10px;
+    height: 10px;
+    bottom: -3px;
+    right: -3px;
+  }
+}
+
+/* Very small mobile devices */
+@media (max-width: 380px) {
+  .intersection-group-number {
+    font-size: 0.5rem;
+    width: 8px;
+    height: 8px;
+    bottom: -2px;
+    right: -2px;
+  }
+}
+
 /* Highlight cells with intersection conflicts */
 .fil-cell.intersection-cell.conflict {
   border-color: var(--error) !important;

@@ -2,16 +2,6 @@
 // Intersection management - must be before any function calls
 const intersections = puzzle.intersections || [];
 const intersectionMap = new Map(); // Maps cell positions to intersection groups
-const groupColors = [
-  "#FF6B6B",
-  "#4ECDC4",
-  "#45B7D1",
-  "#96CEB4",
-  "#FECA57",
-  "#FF9FF3",
-  "#54A0FF",
-  "#5F27CD",
-];
 
 // Other early variables
 let gridRows = []; // Will store references to grid rows
@@ -33,6 +23,18 @@ function enforceMobileSizes() {
       num.style.width = "14px";
       num.style.height = "14px";
       num.style.fontSize = "0.55rem";
+    });
+
+    // Make intersection group numbers smaller on mobile
+    const intersectionNumbers = document.querySelectorAll(
+      ".intersection-group-number"
+    );
+    intersectionNumbers.forEach((num) => {
+      num.style.fontSize = "0.5rem";
+      num.style.width = "10px";
+      num.style.height = "10px";
+      num.style.bottom = "-3px";
+      num.style.right = "-3px";
     });
 
     const grid = document.querySelector(".fil-grid");
@@ -64,6 +66,20 @@ const virtualKeyboardEl = document.getElementById("virtualKeyboard");
 const cluePopupEl = document.getElementById("cluePopup");
 
 const solutionLength = puzzle.words.length;
+
+// Group colors by group number (A=1, B=2, etc.) for consistent coloring
+const groupNumberColors = [
+  "#FF6B6B", // 1 - Red
+  "#4ECDC4", // 2 - Teal
+  "#45B7D1", // 3 - Blue
+  "#96CEB4", // 4 - Green
+  "#FECA57", // 5 - Yellow
+  "#FF9FF3", // 6 - Pink
+  "#54A0FF", // 7 - Light Blue
+  "#5F27CD", // 8 - Purple
+  "#FF8C00", // 9 - Orange
+  "#2ED573", // 10 - Lime
+];
 
 // Build intersection mapping FIRST, before grid creation
 buildIntersectionMap();
@@ -563,7 +579,10 @@ function buildIntersectionMap() {
   intersectionMap.clear();
 
   intersections.forEach((intersection, index) => {
-    const color = groupColors[index % groupColors.length];
+    // Use group number (A=1, B=2, etc.) for consistent coloring
+    const groupNumber = intersection.group.charCodeAt(0) - 64; // A=1, B=2, etc.
+    const color =
+      groupNumberColors[(groupNumber - 1) % groupNumberColors.length];
 
     // Store intersection for both directions
     const key1 = `${intersection.word1Index}-${intersection.letter1Pos}`;
@@ -1699,6 +1718,17 @@ window.addEventListener("resize", () => {
       num.style.fontSize = "";
     });
 
+    const intersectionNumbers = document.querySelectorAll(
+      ".intersection-group-number"
+    );
+    intersectionNumbers.forEach((num) => {
+      num.style.fontSize = "";
+      num.style.width = "";
+      num.style.height = "";
+      num.style.bottom = "";
+      num.style.right = "";
+    });
+
     const grid = document.querySelector(".fil-grid");
     if (grid) {
       grid.style.padding = "";
@@ -1734,6 +1764,17 @@ window.addEventListener("orientationchange", () => {
       cell.style.fontSize = "";
       cell.style.minWidth = "";
       cell.style.minHeight = "";
+    });
+
+    const intersectionNumbers = document.querySelectorAll(
+      ".intersection-group-number"
+    );
+    intersectionNumbers.forEach((num) => {
+      num.style.fontSize = "";
+      num.style.width = "";
+      num.style.height = "";
+      num.style.bottom = "";
+      num.style.right = "";
     });
 
     enforceMobileSizes();
