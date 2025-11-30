@@ -61,6 +61,7 @@ const toastEl = document.getElementById("toast");
 const victoryModalEl = document.getElementById("victoryModal");
 const victoryVideoEl = document.getElementById("victoryVideo");
 const virtualKeyboardEl = document.getElementById("virtualKeyboard");
+const cluePopupEl = document.getElementById("cluePopup");
 
 const solutionLength = puzzle.words.length;
 
@@ -203,12 +204,8 @@ puzzle.words.forEach((word, index) => {
         `Word ${index}, Position ${i}: Found intersection group ${displayGroupNumber}`
       );
       c.classList.add("intersection-cell");
-      c.style.borderColor = intersectionInfo.color;
-      c.style.borderWidth = "2px";
-      c.style.borderStyle = "solid";
-      c.style.background = intersectionInfo.color + "20"; // 20 = 12.5% opacity
 
-      // Add group number indicator
+      // Add group number indicator (keep colored)
       const groupNumber = document.createElement("div");
       groupNumber.className = "intersection-group-number";
       // Convert group letter to number (A=1, B=2, C=3, etc.)
@@ -239,20 +236,21 @@ puzzle.words.forEach((word, index) => {
 
     if (i === word.solutionIndex) c.classList.add("solution");
 
-    // Add click handler to select cell for typing
-    c.addEventListener("click", () => {
-      // If this cell's word is not the active word, make it active
-      if (activeWordIndex !== index) {
+    // Add mousedown handler to show clue popup and select word on mobile
+    c.addEventListener("mousedown", (e) => {
+      // On mobile, clicking a cell should select the word and show keyboard
+      if (window.innerWidth <= 720) {
+        e.stopPropagation(); // Prevent row click handler from firing
         selectWord(index);
+        // Find the clicked position within the word
+        const clickedPos = Number(c.dataset.letterIndex);
+        if (!isNaN(clickedPos)) {
+          focusGridCell(index, clickedPos);
+        }
       }
-      // Update the current position
-      currentCellPosition = i;
 
-      // Visual feedback for selected cell
-      document.querySelectorAll(".fil-cell").forEach((cell) => {
-        cell.classList.remove("selected-cell");
-      });
-      c.classList.add("selected-cell");
+      // Delay positioning to allow any scrolling to complete
+      setTimeout(() => showCluePopup(index, c), 100);
     });
 
     // Add focus handler for desktop keyboard input (not mobile)
@@ -420,6 +418,7 @@ const activeClueText = document.getElementById("activeClueText");
 let wordInputs = puzzle.words.map(() => "");
 let activeWordIndex = null;
 let currentCellPosition = 0; // Track current cell position within the active word
+let clickTimeout = null; // For distinguishing single and double clicks
 
 // localStorage key for this puzzle
 const STORAGE_KEY = `filippine-puzzle-${puzzle.title
@@ -507,6 +506,57 @@ document.addEventListener("keydown", (e) => {
     closeVictoryModal();
   }
 });
+
+// Clue Popup Functions
+function showCluePopup(wordIndex, cell) {
+  const word = puzzle.words[wordIndex];
+  const textEl = cluePopupEl.querySelector(".clue-popup-text");
+  textEl.textContent = word.clue;
+
+  // Temporarily show to get dimensions
+  cluePopupEl.classList.remove("hidden");
+  const popupRect = cluePopupEl.getBoundingClientRect();
+  cluePopupEl.classList.add("hidden");
+
+  // Get the clicked cell's position
+  const cellRect = cell.getBoundingClientRect();
+
+  // Calculate position relative to the clicked cell
+  const popupWidth = popupRect.width;
+  const popupHeight = popupRect.height;
+
+  // Use a simple, reliable positioning strategy
+  let left = Math.max(
+    10,
+    Math.min(
+      cellRect.left + cellRect.width / 2 - popupWidth / 2,
+      window.innerWidth - popupWidth - 10
+    )
+  );
+
+  // Always position 20px below for consistency
+  let top = cellRect.bottom + 20;
+
+  // Only check if we need to position above (for cells near bottom of screen)
+  if (top + popupHeight > window.innerHeight - 20) {
+    top = cellRect.top - popupHeight - 20;
+  }
+
+  // Apply positioning using fixed positioning to ensure consistency
+  cluePopupEl.style.position = "fixed";
+  cluePopupEl.style.left = left + "px";
+  cluePopupEl.style.top = top + "px";
+  cluePopupEl.classList.remove("hidden");
+}
+
+function hideCluePopup() {
+  cluePopupEl.classList.add("hidden");
+}
+
+// Add event listener for close button
+cluePopupEl
+  .querySelector(".clue-popup-close")
+  .addEventListener("click", hideCluePopup);
 
 // Build intersection mapping
 function buildIntersectionMap() {
@@ -602,8 +652,8 @@ function handleCellInput(wordIndex, letterIndex, letter) {
   // Update the visual row
   updateVisualRow(wordIndex, newWordValue);
 
-  // Update validation
-  checkSingle(wordIndex);
+  // Update validation (without green styling during typing)
+  checkSingle(wordIndex, false);
 
   // Save to localStorage
   saveToStorage();
@@ -680,8 +730,8 @@ function handleGridCellInput(cell) {
   // Update the visual row
   updateVisualRow(wordIndex, newWordValue);
 
-  // Update validation
-  checkSingle(wordIndex);
+  // Update validation (without green styling during typing)
+  checkSingle(wordIndex, false);
 
   // Save to localStorage
   saveToStorage();
@@ -1106,8 +1156,38 @@ function propagateLetter(sourceWordIndex, sourceWordValue) {
   saveToStorage();
 }
 
-// Create simple clue list
+// Create simple clue list for both desktop and mobile
 puzzle.words.forEach((word, index) => {
+  // Create clue item for desktop layout
+  const clueItem = createClueItem(word, index);
+  clueListEl.appendChild(clueItem);
+
+  // Create clue item for mobile layout
+  const clueListMobileEl = document.getElementById("clueListMobile");
+  if (clueListMobileEl) {
+    const clueItemMobile = createClueItem(word, index);
+    clueListMobileEl.appendChild(clueItemMobile);
+  }
+
+  // Add break spacing for desktop clues (after words with breakAfter: true)
+  if (word.breakAfter) {
+    // Add spacer to desktop clues
+    const desktopSpacer = document.createElement("div");
+    desktopSpacer.className = "desktop-clue-spacer";
+    clueListEl.appendChild(desktopSpacer);
+
+    // Add spacer to mobile clues (if they exist)
+    if (clueListMobileEl) {
+      const mobileSpacer = document.createElement("div");
+      mobileSpacer.className = "desktop-clue-spacer";
+      mobileSpacer.style.display = "none"; // Hide in mobile layout
+      clueListMobileEl.appendChild(mobileSpacer);
+    }
+  }
+});
+
+// Helper function to create clue items
+function createClueItem(word, index) {
   const clueItem = document.createElement("div");
   clueItem.className = "clue-list-item";
   clueItem.dataset.wordIndex = index;
@@ -1137,8 +1217,8 @@ puzzle.words.forEach((word, index) => {
     selectWord(index);
   });
 
-  clueListEl.appendChild(clueItem);
-});
+  return clueItem;
+}
 
 // ----------- WORD SELECTION -----------
 function selectWord(index) {
@@ -1157,12 +1237,19 @@ function selectWord(index) {
   if (clueItem) clueItem.classList.add("active");
   if (gridRow) gridRow.classList.add("active");
 
-  // Show active clue section
-  const word = puzzle.words[index];
-  activeClueNumber.textContent = `Word ${index + 1}`;
-  activeClueLength.textContent = `${word.answer.length} letters`;
-  activeClueText.textContent = word.clue;
-  activeClueSection.classList.remove("hidden");
+  // Show active clue section (only if elements exist)
+  if (
+    activeClueSection &&
+    activeClueNumber &&
+    activeClueLength &&
+    activeClueText
+  ) {
+    const word = puzzle.words[index];
+    activeClueNumber.textContent = `Word ${index + 1}`;
+    activeClueLength.textContent = `${word.answer.length} letters`;
+    activeClueText.textContent = word.clue;
+    activeClueSection.classList.remove("hidden");
+  }
 
   activeWordIndex = index;
   updateVisualRow(index, wordInputs[index]);
@@ -1179,8 +1266,8 @@ function selectWord(index) {
 
   focusGridCell(index, targetCellIndex);
 
-  // Show virtual keyboard on mobile
-  showVirtualKeyboard();
+  // Show virtual keyboard on mobile when a cell is selected
+  setTimeout(() => showVirtualKeyboardForSelection(), 10);
 }
 
 // Find the first empty cell in a word, or return 0 if all are filled
@@ -1254,18 +1341,44 @@ function checkSingle(i) {
     }
   }
 
+  // Apply green styling to grid cells and row for correct answers
+  const gridRow = gridRows[i];
+  const wordCells = document.querySelectorAll(`[data-word-index="${i}"]`);
+
+  if (correct) {
+    // Add green styling to all cells in the word
+    wordCells.forEach((cell) => {
+      cell.classList.add("correct-answer");
+    });
+
+    // Add green styling to the grid row
+    if (gridRow) {
+      gridRow.classList.add("correct-row");
+    }
+  } else {
+    // Remove green styling from incorrect answers
+    wordCells.forEach((cell) => {
+      cell.classList.remove("correct-answer");
+    });
+
+    if (gridRow) {
+      gridRow.classList.remove("correct-row");
+    }
+  }
+
   if (!value) {
     solutionCells[i].textContent = "";
+    solutionCells[i].classList.remove("correct-solution");
     return;
   }
 
   if (correct) {
     const letter = word.answer[word.solutionIndex];
     solutionCells[i].textContent = letter;
-    solutionCells[i].classList.add("filled");
+    solutionCells[i].classList.add("filled", "correct-solution");
   } else {
     solutionCells[i].textContent = "";
-    solutionCells[i].classList.remove("filled");
+    solutionCells[i].classList.remove("filled", "correct-solution");
   }
 }
 
@@ -1409,12 +1522,23 @@ document.getElementById("clearBtn").addEventListener("click", () => {
     wordInputs[i] = "";
     updateVisualRow(i, "");
     solutionCells[i].textContent = "";
-    solutionCells[i].classList.remove("filled");
+    solutionCells[i].classList.remove("filled", "correct-solution");
 
     // Clear clue list item status
     const clueItem = document.querySelector(`[data-word-index="${i}"]`);
     if (clueItem) {
       clueItem.classList.remove("correct", "incorrect");
+    }
+
+    // Clear green styling from grid cells and rows
+    const wordCells = document.querySelectorAll(`[data-word-index="${i}"]`);
+    wordCells.forEach((cell) => {
+      cell.classList.remove("correct-answer");
+    });
+
+    const gridRow = gridRows[i];
+    if (gridRow) {
+      gridRow.classList.remove("correct-row");
     }
   }
 
@@ -1431,7 +1555,9 @@ document.getElementById("clearBtn").addEventListener("click", () => {
 
   activeWordIndex = null;
   currentCellPosition = 0;
-  activeClueSection.classList.add("hidden");
+  if (activeClueSection) {
+    activeClueSection.classList.add("hidden");
+  }
 
   toastEl.classList.add("hidden");
 
@@ -1482,24 +1608,49 @@ function setupVirtualKeyboard() {
           }
           break;
         case "done":
-          // Hide keyboard or perform any completion action
-          virtualKeyboardEl.classList.add("hidden");
+          // Hide keyboard
+          hideVirtualKeyboard();
+          // Clear any active word selection
+          document.querySelectorAll(".fil-cell").forEach((cell) => {
+            cell.classList.remove("selected-cell");
+          });
+          activeWordIndex = null;
+          currentCellPosition = 0;
           break;
       }
     }
   });
 }
 
-// Show virtual keyboard when a cell is selected on mobile
+// Detect if device supports touch
+function isTouchDevice() {
+  return (
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0
+  );
+}
+
+// Show virtual keyboard on mobile
 function showVirtualKeyboard() {
-  if (window.innerWidth <= 720 && activeWordIndex !== null) {
+  if (window.innerWidth <= 768 || isTouchDevice()) {
+    virtualKeyboardEl.classList.remove("hidden");
+  }
+}
+
+// Show virtual keyboard when a cell is selected on mobile
+function showVirtualKeyboardForSelection() {
+  if (
+    (window.innerWidth <= 768 || isTouchDevice()) &&
+    activeWordIndex !== null
+  ) {
     virtualKeyboardEl.classList.remove("hidden");
   }
 }
 
 // Hide virtual keyboard
 function hideVirtualKeyboard() {
-  if (window.innerWidth <= 720) {
+  if (window.innerWidth <= 768 || isTouchDevice()) {
     virtualKeyboardEl.classList.add("hidden");
   }
 }
@@ -1518,7 +1669,73 @@ document.getElementById("toggleKeyboardBtn").addEventListener("click", () => {
   }
 });
 
-// Re-enforce mobile sizes on resize (for orientation changes)
+// Handle viewport changes for responsive design
+let resizeTimeout;
 window.addEventListener("resize", () => {
-  setTimeout(enforceMobileSizes, 100);
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    // Force CSS recalculation for responsive changes
+    const app = document.querySelector(".app");
+    if (app) {
+      app.style.display = "none";
+      app.offsetHeight; // Trigger reflow
+      app.style.display = "";
+    }
+
+    // Clear inline styles to let CSS take over
+    const cells = document.querySelectorAll(".fil-cell");
+    cells.forEach((cell) => {
+      cell.style.width = "";
+      cell.style.height = "";
+      cell.style.fontSize = "";
+      cell.style.minWidth = "";
+      cell.style.minHeight = "";
+    });
+
+    const nums = document.querySelectorAll(".fil-num");
+    nums.forEach((num) => {
+      num.style.width = "";
+      num.style.height = "";
+      num.style.fontSize = "";
+    });
+
+    const grid = document.querySelector(".fil-grid");
+    if (grid) {
+      grid.style.padding = "";
+      grid.style.gap = "";
+    }
+
+    const rows = document.querySelectorAll(".fil-row");
+    rows.forEach((row) => {
+      row.style.gap = "";
+    });
+
+    // Re-enforce mobile sizes if needed
+    enforceMobileSizes();
+  }, 150);
+});
+
+// Handle orientation change specifically for mobile
+window.addEventListener("orientationchange", () => {
+  setTimeout(() => {
+    // Force CSS recalculation
+    const app = document.querySelector(".app");
+    if (app) {
+      app.style.display = "none";
+      app.offsetHeight;
+      app.style.display = "";
+    }
+
+    // Clear inline styles
+    const cells = document.querySelectorAll(".fil-cell");
+    cells.forEach((cell) => {
+      cell.style.width = "";
+      cell.style.height = "";
+      cell.style.fontSize = "";
+      cell.style.minWidth = "";
+      cell.style.minHeight = "";
+    });
+
+    enforceMobileSizes();
+  }, 250);
 });
