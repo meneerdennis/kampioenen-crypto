@@ -52,9 +52,6 @@ function enforceMobileSizes() {
 
 // Titles
 document.getElementById("title").textContent = `Filippine – ${puzzle.title}`;
-document.getElementById(
-  "solutionHint"
-).textContent = `Hint voor het oplossingswoord: ${puzzle.hint}`;
 
 // const clueListEl moved to new section
 const solutionWordEl = document.getElementById("solutionWord");
@@ -1631,6 +1628,21 @@ document.getElementById("clearBtn").addEventListener("click", () => {
 
   // Clear localStorage
   clearStorage();
+});
+
+// Print button functionality
+document.getElementById("printBtn").addEventListener("click", () => {
+  // Show a brief message before printing
+  toastEl.textContent = "Printversie wordt geopend...";
+  toastEl.className = "toast";
+  toastEl.classList.remove("hidden");
+
+  // Hide the toast after a short delay
+  setTimeout(() => {
+    toastEl.classList.add("hidden");
+    // Trigger the print dialog
+    window.print();
+  }, 1000);
 });
 
 // ----------- VIRTUAL KEYBOARD FUNCTIONALITY -----------

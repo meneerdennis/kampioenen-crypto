@@ -85,7 +85,7 @@ section {
   width: 320px;
   background: #f8f9fa;
   border-radius: var(--radius);
-  border: 1px solid #e9ecef;
+  border: none;
   padding: 16px;
 }
 
@@ -93,7 +93,7 @@ section {
 .desktop-clues .clue-list {
   display: flex;
   flex-direction: column;
-  gap: 4px; /* Match grid row spacing */
+  gap: 2px; /* Even smaller to better match grid spacing */
 }
 
 .desktop-clues .clue-list-item {
@@ -106,7 +106,7 @@ section {
   font-size: 0.85rem;
   line-height: 1.3;
   /* Exact height to match grid row */
-  height: 44px;
+  height: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -154,7 +154,7 @@ section {
 }
 
 .desktop-clues .clue-list-item-text {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   line-height: 1.2;
   /* Allow text to wrap and be fully visible */
   white-space: normal;
@@ -162,19 +162,12 @@ section {
   text-overflow: clip;
 }
 
-/* Desktop clue spacers - only visible on wider screens */
+/* Desktop clue spacers - optimized spacing ratio */
 .desktop-clue-spacer {
-  height: 20px;
+  height: 18px;
   background: transparent;
-  margin: 8px 0;
-  display: none; /* Hidden by default, shown on desktop */
-}
-
-/* Show clue spacers only on desktop screens */
-@media (min-width: 1024px) {
-  .desktop-clue-spacer {
-    display: block;
-  }
+  margin: 5px 0;
+  display: block; /* Always block for desktop layout */
 }
 
 /* Mobile clues - shown by default, hidden on wide screens */
@@ -195,17 +188,25 @@ section {
   max-width: 800px;
 }
 
+/* Intersection Letters Section - Hidden on screen, shown only in print */
+.intersection-letters-section {
+  display: none;
+}
+
 .solution-title {
   font-weight: 600;
   margin-bottom: 12px;
   font-size: 1.1rem;
   color: var(--text);
+  display: flex;
+  justify-content: center;
 }
 
 .solution-word {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  justify-content: center;
 }
 
 .solution-letter {
@@ -633,7 +634,7 @@ button:hover {
   max-height: auto;
 
   min-height: 100px;
-  border: 1px solid #ddd;
+  border: none;
   padding: 10px;
   background: #f9f9f9;
   width: 100%;
@@ -660,17 +661,7 @@ button:hover {
 }
 
 .fil-num {
-  width: clamp(12px, 2.5vw, 22px);
-  height: clamp(12px, 2.5vw, 22px);
-  border-radius: 999px;
-  background: #111827;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: clamp(0.55rem, 1.8vw, 0.8rem);
-  font-weight: 600;
+  display: none; /* Hide numbers since clues list provides them */
 }
 
 .fil-cells {
@@ -770,7 +761,7 @@ button:hover {
   bottom: -6px;
   right: -6px;
   background: var(--accent);
-  color: white;
+  color: black;
   font-size: 0.7rem;
   font-weight: bold;
   border: 1px solid var(--accent);
@@ -856,6 +847,11 @@ button:hover {
 .solution-spacer {
   width: 16px;
   height: 1px;
+}
+
+/* Intersection Letters Section - Hidden on screen, shown only in print */
+.intersection-letters-section {
+  display: none;
 }
 
 /* Victory Modal Styles */
@@ -995,7 +991,7 @@ button:hover {
     margin: 0; /* Remove margins for perfect alignment */
     display: flex;
     align-items: center;
-    height: 44px; /* Exact height to match clues */
+    height: 40px; /* Exact height to match clues */
     box-sizing: border-box;
   }
 
@@ -1033,6 +1029,7 @@ button:hover {
   .desktop-clues .clue-list-item {
     height: 44px;
     padding: 6px 10px;
+    font-size: 0.9rem;
   }
 }
 
@@ -1044,7 +1041,7 @@ button:hover {
 
   .desktop-clues .clue-list-item {
     height: 48px; /* Adjust for larger grid rows */
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     padding: 7px 12px;
   }
 
@@ -1053,15 +1050,15 @@ button:hover {
   }
 
   .fil-cell {
-    width: 36px;
-    height: 44px;
-    font-size: 1.2rem;
+    width: 40px;
+    height: 48px;
+    font-size: 1.3rem;
   }
 
   .fil-num {
-    width: 22px;
-    height: 22px;
-    font-size: 0.8rem;
+    width: 24px;
+    height: 24px;
+    font-size: 0.85rem;
   }
 
   .fil-grid {
@@ -1714,5 +1711,441 @@ button:hover {
     font-size: 1.1rem;
     width: 18px;
     height: 18px;
+  }
+}
+
+/* ========================================= */
+/* PRINT-FRIENDLY THEME */
+/* ========================================= */
+
+@media print {
+  :root {
+    --bg: #ffffff;
+    --card-bg: #ffffff;
+    --border: #000000;
+    --text: #000000;
+    --muted: #333333;
+    --accent: #000000;
+    --success: #000000;
+    --error: #000000;
+    --radius: 0px;
+    --shadow: none;
+  }
+
+  /* Optimize for A4 portrait: reduce margins and padding */
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  body {
+    font-size: 10pt !important;
+  }
+
+  /* Remove background colors and shadows for printing */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .app {
+    box-shadow: none !important;
+    background: white !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+    padding: 16px !important;
+    border-radius: 0 !important;
+  }
+
+  /* Make all cells high contrast for printing */
+  .fil-cell {
+    background: white !important;
+    border: 2px solid black !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  .fil-cell.filled {
+    background: white !important;
+  }
+
+  .fil-cell.solution {
+    border: 2px solid black !important;
+    background: white !important;
+  }
+
+  .fil-cell.correct-answer {
+    border: 2px solid black !important;
+    background: white !important;
+  }
+
+  .fil-cell.solution.correct-answer {
+    border: 3px solid black !important;
+    background: white !important;
+  }
+
+  .fil-cell.intersection-cell {
+    border: 1px solid black !important;
+  }
+
+  /* Remove blue/green/red highlighting for printing */
+  .fil-cell.selected-cell,
+  .fil-row.active,
+  .clue-list-item.active {
+    background: white !important;
+    border-color: black !important;
+  }
+
+  .fil-cell:hover,
+  .fil-row:hover {
+    background: white !important;
+    border-color: black !important;
+    transform: none !important;
+  }
+
+  /* Make intersection group numbers print-friendly */
+  .intersection-group-number {
+    background: white !important;
+    color: black !important;
+    border: 2px solid black !important;
+    box-shadow: none !important;
+  }
+
+  /* Remove shadows and backgrounds from all elements */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background-image: none !important;
+  }
+
+  /* Ensure high contrast for text elements */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: black !important;
+  }
+
+  .solution-panel {
+    background: white !important;
+    border: 2px solid black !important;
+    padding: 12px !important;
+    margin-bottom: 15px !important;
+  }
+
+  /* Show intersection letters section in print */
+  .intersection-letters-section {
+    display: block !important;
+    border: 2px solid black !important;
+    padding: 12px !important;
+    background: white !important;
+    margin-top: 15px !important;
+  }
+
+  .intersection-letters-section h3 {
+    margin: 0 0 8px 0 !important;
+    font-size: 12pt !important;
+    color: black !important;
+    text-align: center !important;
+  }
+
+  .intersection-letters-section p {
+    margin: 0 0 10px 0 !important;
+    font-size: 9pt !important;
+    color: black !important;
+    text-align: center !important;
+  }
+
+  /* Horizontal layout for intersection letters */
+  .intersection-letters-grid {
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: center !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .intersection-letter-box {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 3px !important;
+  }
+
+  .letter-label {
+    font-size: 10pt !important;
+    font-weight: bold !important;
+    color: black !important;
+  }
+
+  .letter-box {
+    width: 24px !important;
+    height: 24px !important;
+    border: 2px solid black !important;
+    background: white !important;
+  }
+
+  .solution-letter {
+    width: 28px !important;
+    height: 36px !important;
+    font-size: 13pt !important;
+    border: 2px solid black !important;
+    background: white !important;
+    color: black !important;
+    min-height: 36px !important;
+  }
+
+  .solution-letter.filled {
+    border: 2px solid black !important;
+  }
+
+  .solution-letter.filled.correct-solution {
+    border: 3px solid black !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Solution word container for print */
+  .solution-word {
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  /* Make clue items high contrast */
+  .clue-list-item {
+    background: white !important;
+    border: 1px solid black !important;
+    color: black !important;
+  }
+
+  .clue-list-item.correct {
+    border: 2px solid black !important;
+    background: white !important;
+  }
+
+  .clue-list-item.incorrect {
+    border: 2px solid black !important;
+    background: white !important;
+  }
+
+  .clue-list-item:hover {
+    background: white !important;
+    border-color: black !important;
+    transform: none !important;
+  }
+
+  /* Remove colored borders and backgrounds */
+  .desktop-clues {
+    background: white !important;
+    border: none !important;
+    padding: 8px !important;
+    transform: translateY(3px) !important;
+  }
+
+  /* Optimize clue items for compact A4 portrait fit */
+  .desktop-clues .clue-list-item {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 4px 6px !important;
+    font-size: 9pt !important;
+    margin-bottom: 2px !important;
+  }
+
+  .desktop-clues .clue-list-item-text {
+    font-size: 8.5pt !important;
+    line-height: 1.1 !important;
+  }
+
+  .desktop-clues .clue-list-item-number {
+    font-size: 8.5pt !important;
+  }
+
+  .desktop-clues .clue-list-item-length {
+    font-size: 7.5pt !important;
+  }
+
+  /* Show clue spacers in print for proper alignment */
+  .desktop-clue-spacer {
+    display: block !important;
+    height: 18px !important;
+    background: transparent !important;
+    margin: 5px 0 !important;
+  }
+
+  /* Button styling for print */
+  button {
+    background: white !important;
+    color: black !important;
+    border: 2px solid black !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  button:hover {
+    transform: none !important;
+  }
+
+  /* Remove gradients and complex backgrounds */
+  .victory-modal-header {
+    background: white !important;
+    color: black !important;
+    border-bottom: 2px solid black !important;
+  }
+
+  /* Hide non-essential elements for printing */
+  .virtual-keyboard,
+  .buttons,
+  .toast,
+  .victory-modal,
+  .clue-popup {
+    display: none !important;
+  }
+
+  /* Optimize layout for paper - Side by side layout for portrait printing */
+  .desktop-layout {
+    flex-direction: row !important;
+    gap: 16px !important;
+    align-items: flex-start !important;
+  }
+
+  .desktop-clues {
+    display: block !important;
+    width: 280px !important;
+    margin-bottom: 0 !important;
+    flex-shrink: 0 !important;
+    padding: 8px !important;
+    transform: translateY(3px) !important;
+  }
+
+  /* Mobile clues hidden in print */
+  .mobile-clues {
+    display: none !important;
+  }
+
+  /* Make main section take remaining space */
+  section {
+    flex: 1 !important;
+    max-width: none !important;
+  }
+
+  /* Ensure grid cells are optimized for A4 portrait */
+  .fil-cell {
+    width: 28px !important;
+    height: 36px !important;
+    font-size: 14px !important;
+    min-width: 28px !important;
+    min-height: 36px !important;
+  }
+
+  .fil-num {
+    display: none !important; /* Hide numbers in print as well */
+  }
+
+  /* Print-specific grid sizing */
+  .fil-grid {
+    padding: 12px !important;
+    gap: 3px !important;
+    background: white !important;
+    border: none !important;
+  }
+
+  .fil-row {
+    gap: 3px !important;
+    height: 36px !important;
+  }
+
+  /* Page breaks */
+  .filippine-visual {
+    page-break-inside: avoid;
+    margin-bottom: 10px !important;
+  }
+
+  .clue-list-section {
+    page-break-inside: avoid;
+  }
+
+  /* Optimize text sizes for A4 portrait */
+  header p {
+    font-size: 10pt !important;
+  }
+
+  .clue-list-item-text {
+    font-size: 9pt !important;
+  }
+
+  .solution-hint {
+    font-size: 9pt !important;
+  }
+
+  /* Remove all hover effects and animations */
+  .fil-cell,
+  .clue-list-item,
+  button,
+  .fil-row {
+    transition: none !important;
+  }
+
+  /* Remove number circles and replace with simple numbering */
+  .fil-num {
+    border-radius: 0 !important;
+  }
+
+  /* Make ghost cells invisible in print */
+  .fil-cell.ghost {
+    border: none !important;
+    background: transparent !important;
+  }
+
+  /* Print-specific layout adjustments - more compact for A4 portrait */
+  .layout {
+    gap: 8px !important;
+  }
+
+  header {
+    margin-bottom: 8px !important;
+  }
+
+  h1 {
+    font-size: 18pt !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* Remove all blue/red/green colors and replace with black */
+  .desktop-clues .clue-list-item:hover,
+  .desktop-clues .clue-list-item.active,
+  .clue-list-item:hover,
+  .clue-list-item.active {
+    background: white !important;
+    border-color: black !important;
+  }
+
+  /* Print-friendly colors for all status indicators */
+  .clue.correct {
+    border-color: black !important;
+    background: white !important;
+  }
+
+  .clue.incorrect {
+    border-color: black !important;
+    background: white !important;
+  }
+
+  .fil-row.correct-row {
+    background: white !important;
+  }
+
+  /* Ensure text remains readable */
+  .clue-list-item-number,
+  .clue-number {
+    color: black !important;
+    font-weight: bold !important;
   }
 }
