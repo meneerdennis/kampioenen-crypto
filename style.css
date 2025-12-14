@@ -1766,7 +1766,7 @@ button:hover {
   /* Make all cells high contrast for printing */
   .fil-cell {
     background: white !important;
-    border: 2px solid black !important;
+    border: 1px solid black !important;
     color: black !important;
     box-shadow: none !important;
   }
@@ -1776,17 +1776,17 @@ button:hover {
   }
 
   .fil-cell.solution {
-    border: 2px solid black !important;
+    border: 4px solid black !important;
     background: white !important;
   }
 
   .fil-cell.correct-answer {
-    border: 2px solid black !important;
+    border: 1px solid black !important;
     background: white !important;
   }
 
   .fil-cell.solution.correct-answer {
-    border: 3px solid black !important;
+    border: 4px solid black !important;
     background: white !important;
   }
 
@@ -1886,10 +1886,11 @@ button:hover {
   }
 
   .letter-box {
-    width: 24px !important;
-    height: 24px !important;
+    width: 30px !important;
+    height: 30px !important;
     border: 2px solid black !important;
     background: white !important;
+    border-radius: 8px;
   }
 
   .solution-letter {
@@ -1907,7 +1908,7 @@ button:hover {
   }
 
   .solution-letter.filled.correct-solution {
-    border: 3px solid black !important;
+    border: 2px solid black !important;
     background: white !important;
     color: black !important;
   }
@@ -1956,7 +1957,7 @@ button:hover {
     min-height: 36px !important;
     padding: 4px 6px !important;
     font-size: 9pt !important;
-    margin-bottom: 2px !important;
+    margin-bottom: 1px !important;
   }
 
   .desktop-clues .clue-list-item-text {
@@ -1975,7 +1976,7 @@ button:hover {
   /* Show clue spacers in print for proper alignment */
   .desktop-clue-spacer {
     display: block !important;
-    height: 18px !important;
+    height: 25px !important;
     background: transparent !important;
     margin: 5px 0 !important;
   }
@@ -2018,7 +2019,7 @@ button:hover {
 
   .desktop-clues {
     display: block !important;
-    width: 280px !important;
+    width: 258px !important;
     margin-bottom: 0 !important;
     flex-shrink: 0 !important;
     padding: 8px !important;
@@ -2038,7 +2039,7 @@ button:hover {
 
   /* Ensure grid cells are optimized for A4 portrait */
   .fil-cell {
-    width: 28px !important;
+    width: 30px !important;
     height: 36px !important;
     font-size: 14px !important;
     min-width: 28px !important;
